@@ -4,14 +4,14 @@ using namespace std;
 #include <iostream>
 #include <unordered_set>
 
-bool isValid_User(string& u, string& p, string& l);
+bool isValid_User(string& u, string& p, string& r);
 
 class UserAccount {
 private:
     string username;
     string password;
-    string level;
+    string role;
 public:
-    UserAccount(string& u, string& p, string& l);
+    UserAccount(string& u, string& p, string& r);
 
 };
