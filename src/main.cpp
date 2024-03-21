@@ -10,7 +10,7 @@ int main() {
     cin >> input_username;
     cout << "Password:";
     cin >> input_password;
-    cout << "Level:";
+    cout << "Role:";
     cin >> input_level;
     if (isValid_User(input_username, input_password, input_level)) {
         UserAccount user(input_username, input_password, input_level);
