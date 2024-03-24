@@ -13,5 +13,6 @@ private:
     string role;
 public:
     UserAccount(string& u, string& p, string& r);
+    ~UserAccount() { }
 
 };
