@@ -1,13 +1,27 @@
 #include "UserAccount.h"
 
-bool isValid_User(string& u, string& p, string& l) {
+/* this is for user account creation (once in main)
+   string input_username;
+   string input_password;
+   string input_level;
+   cout << "Username:";
+   cin >> input_username;
+   cout << "Password:";
+   cin >> input_password;
+   cout << "Role:";
+   cin >> input_level;
+   if (isValid_User(input_username, input_password, input_level)) {
+       UserAccount user(input_username, input_password, input_level);
+   } */
+
+bool isValid_User(string& u, string& p, string& r) {
     bool valid_username = false;
     bool valid_password = false;
-    bool valid_level = false;
-    unordered_set<string> lo_levels;
-    lo_levels.insert("administrator");
-    lo_levels.insert("manager");
-    lo_levels.insert("employee");
+    bool valid_role = false;
+    unordered_set<string> lo_roles;
+    lo_roles.insert("admin");
+    lo_roles.insert("manager");
+    lo_roles.insert("employee");
 
     // Check if u is a valid username:
     size_t period_pos = u.find('.');
@@ -20,13 +34,13 @@ bool isValid_User(string& u, string& p, string& l) {
         valid_password = true;
     }
 
-    // check if l is in the list of levels assigned to employees
-    if (lo_levels.find(l) != lo_levels.end()) {
-        valid_level = true;
+    // check if l is in the list of roles assigned to employees
+    if (lo_roles.find(r) != lo_roles.end()) {
+        valid_role = true;
     }
 
     // final check
-    if (valid_username && valid_password && valid_level) {
+    if (valid_username && valid_password && valid_role) {
         return true;
     }
     else {
@@ -36,14 +50,14 @@ bool isValid_User(string& u, string& p, string& l) {
         if (!valid_password) {
             cout << "Invalid password" << endl;
         }
-        if (!valid_level) {
-            cout << "Invalid level title" << endl;
+        if (!valid_role) {
+            cout << "Invalid role title" << endl;
         }
         return false;
     }
 }
 
-UserAccount::UserAccount(string& u, string& p, string& l) : username(u), password(p), level(l) {
+UserAccount::UserAccount(string& u, string& p, string& r) : username(u), password(p), role(r) {
     cout << "User: " << username << " has been created." << endl;
 }
 
