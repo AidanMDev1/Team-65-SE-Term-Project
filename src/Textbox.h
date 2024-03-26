@@ -12,11 +12,13 @@
 
 class Textbox {
 private:
+    sf::RectangleShape box;
     sf::Text textbox;
     std::ostringstream text;
     bool is_selected;
     bool has_limit;
     int limit;
+
 
     void inputLogic(int char_typed) {
         if(char_typed != DELETE_KEY && char_typed != ENTER_KEY && char_typed != ESCAPE_KEY) {
@@ -42,9 +44,12 @@ private:
     }
 public:
     Textbox() { }
-    Textbox(int size, sf::Color color, bool sel) {
-        textbox.setCharacterSize(size);
-        textbox.setFillColor(color);
+
+    // without background
+    Textbox(int char_size, sf::Color txt_color, bool sel) {
+        textbox.setCharacterSize(char_size);
+        textbox.setFillColor(txt_color);
+
         is_selected = sel;
         if (sel) {
             textbox.setString("_");
@@ -53,14 +58,47 @@ public:
             textbox.setString("");
         }
     }
+
+    // with background
+    Textbox(int char_size, sf::Vector2f box_size, sf::Color txt_color, sf::Color box_color, bool sel) {
+        textbox.setCharacterSize(char_size);
+        textbox.setFillColor(txt_color);
+        box.setSize(box_size);
+        box.setFillColor(box_color);
+
+        is_selected = sel;
+        if (sel) {
+            textbox.setString("_");
+        }
+        else {
+            textbox.setString("");
+        }
+    }
+
+
+
+
     ~Textbox() { }
 
     void setFont(sf::Font& font) {
         textbox.setFont(font);
     }
 
-    void setPosition(sf::Vector2f pos) {
-        textbox.setPosition(pos);
+    void setTextColor(sf::Color color) {
+        textbox.setFillColor(color);
+    }
+
+    void setBackColor(sf::Color color) {
+        box.setFillColor(color);
+    }
+
+    void setPosition(sf::Vector2f pos) { //FIXME: text centering is odd
+        box.setPosition(pos);
+
+        float xp = (pos.x + box.getLocalBounds().width / 20) - (textbox.getLocalBounds().width / 2);
+        float yp = (pos.y + box.getLocalBounds().height / 20) - (textbox.getLocalBounds().height / 2);
+        textbox.setPosition({xp, yp});
+
     }
 
     void setLimit(bool tof) {
@@ -82,6 +120,10 @@ public:
             }
             textbox.setString(new_t);
         }
+        else {
+            textbox.setString(text.str() + "_");
+        }
+
     }
 
     std::string getText() {
@@ -89,6 +131,7 @@ public:
     }
 
     void drawTo(sf::RenderWindow& window) {
+        window.draw(box);
         window.draw(textbox);
     }
 
@@ -110,4 +153,26 @@ public:
             }
         }
     }
+
+    bool isSelected() {
+        return is_selected;
+    }
+
+    bool isMouseOver(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+
+        float box_pos_x = box.getPosition().x;
+        float box_pos_y = box.getPosition().y;
+
+        float box_xpos_width = box.getPosition().x + box.getLocalBounds().width;
+        float box_xpos_height = box.getPosition().y + box.getLocalBounds().height;
+
+        // within bounds
+        if (mouse_x < box_xpos_width && mouse_x > box_pos_x && mouse_y < box_xpos_height && mouse_y > box_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
 };

@@ -21,6 +21,14 @@ public:
         button.setSize(size);
         button.setFillColor(bg_color);
     }
+
+    // button w/o back (just text without interaction or possible interaction)
+    Button(std::string t, int char_size, sf::Color text_color) {
+        text.setString(t);
+        text.setFillColor(text_color);
+        text.setCharacterSize(char_size);
+    }
+
     ~Button() { }
 
     void setFont(sf::Font& font) {
