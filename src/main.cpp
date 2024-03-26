@@ -55,11 +55,16 @@ int main() {
     while (window.isOpen()) {
         sf::Event event;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
-            username_tbox.setSelected(true);
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             username_tbox.setSelected(false);
+            password_tbox.setSelected(false);
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+            if (username_tbox.isSelected()) {
+                username_tbox.setSelected(false);
+                password_tbox.setSelected(true);
+            }
         }
 
         // event loop
@@ -102,6 +107,10 @@ int main() {
                     }
                     else {
                         password_tbox.setSelected(false);
+                    }
+
+                    if (login_btn.isMouseOver(window)) {
+                        std::cout << username_tbox.getText() << "\n" << password_tbox.getText() << std::endl;
                     }
                     break;
             }
