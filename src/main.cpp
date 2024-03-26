@@ -53,7 +53,7 @@ int main() {
 
     // Window loop
     while (window.isOpen()) {
-        sf::Event event;
+        sf::Event e;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             username_tbox.setSelected(false);
@@ -68,16 +68,16 @@ int main() {
         }
 
         // event loop
-        while (window.pollEvent(event)) {
-            switch (event.type) {
+        while (window.pollEvent(e)) {
+            switch (e.type) {
                 case sf::Event::Closed:
                     window.close();
                 case sf::Event::TextEntered:
                     if (username_tbox.isSelected()) {
-                        username_tbox.typeOn(event);
+                        username_tbox.typeOn(e);
                     }
                     if (password_tbox.isSelected()) {
-                        password_tbox.typeOn(event);
+                        password_tbox.typeOn(e);
                     }
                     break;
                 case sf::Event::MouseMoved:
@@ -112,6 +112,46 @@ int main() {
                     if (login_btn.isMouseOver(window)) {
                         std::cout << username_tbox.getText() << "\n" << password_tbox.getText() << std::endl;
                     }
+                    break;
+                case sf::Event::Resized:
+                    break;
+                case sf::Event::LostFocus:
+                    break;
+                case sf::Event::GainedFocus:
+                    break;
+                case sf::Event::KeyPressed:
+                    break;
+                case sf::Event::KeyReleased:
+                    break;
+                case sf::Event::MouseWheelMoved:
+                    break;
+                case sf::Event::MouseWheelScrolled:
+                    break;
+                case sf::Event::MouseButtonReleased:
+                    break;
+                case sf::Event::MouseEntered:
+                    break;
+                case sf::Event::MouseLeft:
+                    break;
+                case sf::Event::JoystickButtonPressed:
+                    break;
+                case sf::Event::JoystickButtonReleased:
+                    break;
+                case sf::Event::JoystickMoved:
+                    break;
+                case sf::Event::JoystickConnected:
+                    break;
+                case sf::Event::JoystickDisconnected:
+                    break;
+                case sf::Event::TouchBegan:
+                    break;
+                case sf::Event::TouchMoved:
+                    break;
+                case sf::Event::TouchEnded:
+                    break;
+                case sf::Event::SensorChanged:
+                    break;
+                case sf::Event::Count:
                     break;
             }
         }

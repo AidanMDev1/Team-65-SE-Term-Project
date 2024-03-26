@@ -17,7 +17,7 @@ private:
     std::ostringstream text;
     bool is_selected;
     bool has_limit;
-    int limit;
+    unsigned int limit;
 
 
     void inputLogic(int char_typed) {
@@ -35,7 +35,7 @@ private:
     void deleteLastChar() {
         std::string t = text.str();
         std::string new_t = "";
-        for (int i = 0; i < t.length() - 1; i++) {
+        for (unsigned int i = 0; i < t.length() - 1; i++) {
             new_t += t[i];
         }
         text.str("");
@@ -115,7 +115,7 @@ public:
         if (!sel) {
             std::string t = text.str();
             std::string new_t = "";
-            for (int i = 0; i < t.length(); i++) {
+            for (unsigned int i = 0; i < t.length(); i++) {
                 new_t += t[i];
             }
             textbox.setString(new_t);
