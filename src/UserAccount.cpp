@@ -14,18 +14,18 @@
        UserAccount user(input_username, input_password, input_level);
    } */
 
-bool isValid_User(string& u, string& p, string& r) {
+bool isValid_User(std::string& u, std::string& p, std::string& r) {
     bool valid_username = false;
     bool valid_password = false;
     bool valid_role = false;
-    unordered_set<string> lo_roles;
+    std::unordered_set<std::string> lo_roles;
     lo_roles.insert("admin");
     lo_roles.insert("manager");
     lo_roles.insert("employee");
 
     // Check if u is a valid username:
     size_t period_pos = u.find('.');
-    if (period_pos != string::npos && period_pos != 0 && period_pos != u.length() - 1) {
+    if (period_pos != std::string::npos && period_pos != 0 && period_pos != u.length() - 1) {
         valid_username = true;
     }
 
@@ -43,21 +43,10 @@ bool isValid_User(string& u, string& p, string& r) {
     if (valid_username && valid_password && valid_role) {
         return true;
     }
-    else {
-        if (!valid_username) {
-            cout << "Invalid username" << endl;
-        }
-        if (!valid_password) {
-            cout << "Invalid password" << endl;
-        }
-        if (!valid_role) {
-            cout << "Invalid role title" << endl;
-        }
-        return false;
-    }
+    return false;
 }
 
-UserAccount::UserAccount(string& u, string& p, string& r) : username(u), password(p), role(r) {
-    cout << "User: " << username << " has been created." << endl;
+UserAccount::UserAccount(std::string& u, std::string& p, std::string& r) : username(u), password(p), role(r) {
+    std::cout << "User: " << username << " has been created." << std::endl;
 }
 

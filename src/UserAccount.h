@@ -1,18 +1,17 @@
 #pragma once
-using namespace std;
 #include <string>
 #include <iostream>
 #include <unordered_set>
 
-bool isValid_User(string& u, string& p, string& r);
+bool isValid_User(std::string& u, std::string& p, std::string& r);
 
 class UserAccount {
 private:
-    string username;
-    string password;
-    string role;
+    std::string username;
+    std::string password;
+    std::string role;
 public:
-    UserAccount(string& u, string& p, string& r);
+    UserAccount(std::string& u, std::string& p, std::string& r);
     ~UserAccount() { }
 
 };
