@@ -1,16 +1,62 @@
-const MongoClient = require('mongodb');
-const mongoose = require('mongoose');
+const {MongoClient} = require('mongodb');
 
-async function main()
+const uri = "mongodb+srv://Team65:ka1o40V2jAj4SstC@questclock.ofavxyx.mongodb.net/?retryWrites=true&w=majority&appName=QuestClock";
+const client = new MongoClient(uri);
+
+client.connect();
+const database = client.db("QuestClockLogin");
+const collection = database.collection("User Authentication");
+
+async function login()
 {
-    const uri = "mongodb+srv://Team65:ka1o40V2jAj4SstC@questclock.ofavxyx.mongodb.net/?retryWrites=true&w=majority&appName=QuestClock";
-    const client = new MongoClient(uri);
+    try
+    {
+        try
+        {
+            const finduser = await collection.findOne({username: "Brian", password: "Brian123"});
+            if (finduser == null)
+            {
+                console.log('login failed, username and/or password may be incorrect \n');
+            }
+            else
+            {
+                console.log(`login successful ${JSON.stringify(finduser)} \n`);
+            }
+        }
+        catch(e)
+        {
+            console.error(`something went wrong with login: ${e}\n`);
+        }
+    }
+    catch(e)
+    {
+        console.error(e);
+    }
+    finally
+    {
+        await client.close();
+    }
+};
 
+async function createuser()
+{
     try 
     {
-        await client.connect();
-        await listDatabases(client);
-
+        const user = 
+        {
+            username: "Brian",
+            password: "Brian123",
+            role: "Manager",
+        };
+        try 
+        {
+            await collection.insertOne(user);
+            console.log(`user successfully inserted.\n`);
+        } 
+        catch (e) 
+        {
+            console.error(`Something went wrong trying to create the new user: ${e}\n`);
+        }
     }
     catch(e) 
     {
@@ -22,11 +68,5 @@ async function main()
     }
 }
 
-main().catch(console.error);
-
-async function listDatabases(client) 
-{
-    const databasesList = await client.db().admin().listDatabases();
-    console.log("Databases: ");
-    databasesList.databases.forEach(db => {console.log(`- ${db.name}`);})
-}
+//createuser().catch(console.error);
+login().catch(console.error);
