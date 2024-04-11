@@ -1,11 +1,13 @@
 const {MongoClient} = require('mongodb');
+const {express} = require('express');
+const {cors} = require('cors');
 
 const uri = "mongodb+srv://Team65:ka1o40V2jAj4SstC@questclock.ofavxyx.mongodb.net/?retryWrites=true&w=majority&appName=QuestClock";
 const client = new MongoClient(uri);
 
 client.connect();
 const database = client.db("QuestClockLogin");
-const collection = database.collection("User Authentication");
+const collection = database.collection("user");
 
 async function login()
 {
@@ -48,6 +50,7 @@ async function createuser()
             password: "Brian123",
             role: "Manager",
         };
+
         try 
         {
             await collection.insertOne(user);
@@ -57,6 +60,7 @@ async function createuser()
         {
             console.error(`Something went wrong trying to create the new user: ${e}\n`);
         }
+
     }
     catch(e) 
     {
@@ -66,7 +70,8 @@ async function createuser()
     {
         await client.close();
     }
-}
+};
+
 
 //createuser().catch(console.error);
 login().catch(console.error);
