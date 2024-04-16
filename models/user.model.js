@@ -4,7 +4,8 @@ const UserSchema = mongoose.Schema(
     {
         username: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         password: {
             type: String,
@@ -19,9 +20,6 @@ const UserSchema = mongoose.Schema(
             required: true
         }
     },
-    {
-        timestamps: true,
-    }
 );
 
 const User = mongoose.model("User", UserSchema);
