@@ -3,6 +3,6 @@ project(Database)
 
 find_package(CURL REQUIRED)
 
-add_executable(run questclock.cpp)
+add_executable(run backendtest.cpp request.h request.cpp)
 
 target_link_libraries(run CURL::libcurl)
