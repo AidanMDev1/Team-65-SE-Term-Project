@@ -14,3 +14,5 @@ watch https://www.youtube.com/watch?v=H1naJEHsxbQ to set up libcurl, before tryi
 
 
 watch this video if you want to better understand the server.js code https://www.youtube.com/watch?v=_7UQPve99r4&t=3196s
+
+the backendtest.cpp has all of the implemented functions and examples of how to use them
