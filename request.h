@@ -9,6 +9,10 @@ private:
     CURL *curl;
     CURLcode res;
     string url = "http://localhost:6500/";
+    string username;
+    string password;
+    string user_role;
+    string assigned_projects = {};
 
 public:
     string get_allusers();
@@ -18,4 +22,6 @@ public:
     bool send_notification(string user, string notif);
     bool check_notification(string user);
     bool delete_notification(string user, string notif);
+    bool clockin(string user, string project);
+    bool clockout(string user, string project);
 };
