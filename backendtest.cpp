@@ -47,5 +47,17 @@ int main(){
     //     cout << "yippee" << endl;
     // };
 
+    // test = req.clockin("Brian", "questclock");
+    // if (test)
+    // {
+    //     cout << "yippee" << endl;
+    // };
+
+    test = req.clockout("Brian", "questclock");
+    if (test)
+    {
+        cout << "yippee" << endl;
+    };
+
     return 0;
 }
