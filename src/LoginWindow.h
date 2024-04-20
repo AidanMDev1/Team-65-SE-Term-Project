@@ -28,11 +28,20 @@ public:
         username_tbox.setPosition({200, 300}); // FIXME: limits need fixing when it comes to deletion
         password_tbox.setFont(font);
         password_tbox.setPosition({200, 400});
-        login_btn = Button("Login", {200, 50}, 30, sf::Color::Black, sf::Color::White);
+        login_btn = Button("Login", {200, 50}, 30, sf::Color::White, sf::Color::Black);
         login_btn.setPosition({200, 500});
         login_btn.setFont(font);
     }
     ~LoginWindow() { }
+
+    void drawTo(sf::RenderWindow& window) {
+        title.drawTo(window);
+        username_txt.drawTo(window);
+        password_txt.drawTo(window);
+        username_tbox.drawTo(window);
+        password_tbox.drawTo(window);
+        login_btn.drawTo(window);
+    }
 };
 
 void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, bool& login_screen, bool& main_screen, sf::Event& e) {
@@ -80,3 +89,4 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, bool&
         }
     }
 }
+

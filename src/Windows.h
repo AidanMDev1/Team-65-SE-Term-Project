@@ -5,6 +5,7 @@
 #include "Textbox.h"
 #include "Button.h"
 #include "LoginWindow.h"
+#include "MainWindow.h"
 
 // inspired by https://youtu.be/T31MoLJws4U?si=_h8ujkH34nowKIoB
 
@@ -12,9 +13,11 @@
 #define HEIGHT 900 // window height
 
 void startWindows() {
-    // LOGIN WINDOW setup
+    // WINDOW booleans
     bool login_screen = true;
     bool main_screen = false;
+    bool time_logs_screen = false;
+
 
     // default info for the windows
     sf::RenderWindow window;
@@ -34,10 +37,7 @@ void startWindows() {
 
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR);
-
-    Button test("QuestClock", 75, sf::Color(64, 156, 120));
-    test.setPosition({250, 200});
-    test.setFont(CNR);
+    MainWindow* mainWindow = new MainWindow(CNR);
 
     // Window loop
     while (window.isOpen()) {
@@ -67,27 +67,23 @@ void startWindows() {
                 LoginWindowEvents(window, loginWindow, login_screen, main_screen, e);
             }
             if (main_screen) {
+                MainWindowEvents(window, mainWindow, login_screen, main_screen, time_logs_screen, e);
+            }
+            if (time_logs_screen) {
                 break;
             }
         }
 
         // displays for each screen
-
         if (login_screen) {
             if (loginWindow == nullptr) {
                 loginWindow = new LoginWindow(CNR);
             }
             window.clear();
             window.draw(background);
-            loginWindow->title.drawTo(window);
-            loginWindow->username_txt.drawTo(window);
-            loginWindow->password_txt.drawTo(window);
-            loginWindow->username_tbox.drawTo(window);
-            loginWindow->password_tbox.drawTo(window);
-            loginWindow->login_btn.drawTo(window);
+            loginWindow->drawTo(window);
             window.display();
         }
-
         else if (main_screen) {
             if (loginWindow != nullptr) {
                 delete loginWindow;
@@ -95,7 +91,16 @@ void startWindows() {
             }
             window.clear();
             window.draw(background);
-            test.drawTo(window);
+            mainWindow->drawTo(window);
+            window.display();
+        }
+        else if (time_logs_screen) {
+            if (mainWindow != nullptr) {
+                delete mainWindow;
+                mainWindow = nullptr;
+            }
+            window.clear();
+            window.draw(background);
             window.display();
         }
     }
