@@ -6,6 +6,7 @@
 #include "Button.h"
 #include "LoginWindow.h"
 #include "MainWindow.h"
+#include "TimesWindow.h"
 
 // inspired by https://youtu.be/T31MoLJws4U?si=_h8ujkH34nowKIoB
 
@@ -17,7 +18,6 @@ void startWindows() {
     bool login_screen = true;
     bool main_screen = false;
     bool time_logs_screen = false;
-
 
     // default info for the windows
     sf::RenderWindow window;
@@ -38,6 +38,7 @@ void startWindows() {
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR);
     MainWindow* mainWindow = new MainWindow(CNR);
+    TimesWindow* timesWindow = new TimesWindow(CNR);
 
     // Window loop
     while (window.isOpen()) {
@@ -70,11 +71,12 @@ void startWindows() {
                 MainWindowEvents(window, mainWindow, login_screen, main_screen, time_logs_screen, e);
             }
             if (time_logs_screen) {
-                break;
+                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e);
             }
         }
 
         // displays for each screen
+        //FIXME might need to figure out a way to relieve the pointers and delete stuff
         if (login_screen) {
             if (loginWindow == nullptr) {
                 loginWindow = new LoginWindow(CNR);
@@ -85,7 +87,7 @@ void startWindows() {
             window.display();
         }
         else if (main_screen) {
-            if (loginWindow != nullptr) {
+            if (loginWindow != nullptr) { // resetting window information because of user sign out
                 delete loginWindow;
                 loginWindow = nullptr;
             }
@@ -95,12 +97,9 @@ void startWindows() {
             window.display();
         }
         else if (time_logs_screen) {
-            if (mainWindow != nullptr) {
-                delete mainWindow;
-                mainWindow = nullptr;
-            }
             window.clear();
             window.draw(background);
+            timesWindow->drawTo(window);
             window.display();
         }
     }

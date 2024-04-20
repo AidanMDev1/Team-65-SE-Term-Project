@@ -83,7 +83,7 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, bool&
         }
 
         if (loginWindow->login_btn.isMouseOver(window)) {
-            std::cout << loginWindow->username_tbox.getText() << "\n" << loginWindow->password_tbox.getText() << std::endl;
+            std::cout << "Username: " << loginWindow->username_tbox.getText() << "\n" << "Password: " << loginWindow->password_tbox.getText() << std::endl;
             login_screen = false;
             main_screen = true;
         }

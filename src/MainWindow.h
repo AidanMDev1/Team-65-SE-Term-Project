@@ -16,7 +16,6 @@ public:
     Button achvmts_notif_btn;
     Button access_logs_btn;
 
-
     MainWindow() { }
     MainWindow(sf::Font& font) {
         welcome_txt = Button("WELCOME! Unlock Time's Potential with QuestClock!", 25, sf::Color(64, 156, 120));
@@ -118,12 +117,12 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, bool& lo
     // action on click for buttons
     if (e.type == sf::Event::MouseButtonPressed) {
         if (mainWindow->sign_out_btn.isMouseOver(window)) {
-            std::cout << "back to sign in" << std::endl;
+            std::cout << "-> Login Screen" << std::endl;
             login_screen = true;
             main_screen = false;
         }
         if (mainWindow->access_logs_btn.isMouseOver(window)) {
-            std::cout << "Timelog time" << std::endl;
+            std::cout << "-> Timelog Screen" << std::endl;
             time_logs_screen = true;
             main_screen = false;
         }
