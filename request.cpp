@@ -58,6 +58,12 @@ bool request::login(string user, string pass)
 
         curl_easy_cleanup(curl);
     }
+    //parse through response_data to find user details and store into request class variables
+    //username = user;
+    //password = pass;
+    //user_role = role;
+    //assigned_projects = projects;
+
     return true;
 };
 
@@ -168,6 +174,56 @@ bool request::check_notification(string user)
 bool request::delete_notification(string user, string notif)
 {
     string param = "api/delete_notification/" + user + "/" + notif;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+}
+bool request::clockin(string user, string project)
+{
+    string param = "api/clockin/" + user + "/" + project;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+}
+bool request::clockout(string user, string project)
+{
+    string param = "api/clockout/" + user + "/" + project;
     string req = url + param;
     string response_data;
 
