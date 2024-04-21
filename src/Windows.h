@@ -7,6 +7,7 @@
 #include "LoginWindow.h"
 #include "MainWindow.h"
 #include "TimesWindow.h"
+#include "ProjectWindow.h"
 
 // inspired by https://youtu.be/T31MoLJws4U?si=_h8ujkH34nowKIoB
 
@@ -18,6 +19,7 @@ void startWindows() {
     bool login_screen = true;
     bool main_screen = false;
     bool time_logs_screen = false;
+    bool project_screen = false;
 
     // default info for the windows
     sf::RenderWindow window;
@@ -39,6 +41,7 @@ void startWindows() {
     LoginWindow* loginWindow = new LoginWindow(CNR);
     MainWindow* mainWindow = new MainWindow(CNR);
     TimesWindow* timesWindow = new TimesWindow(CNR);
+    ProjectWindow* projectWindow = new ProjectWindow(CNR, "Test", "test");
 
     // Window loop
     while (window.isOpen()) {
@@ -68,10 +71,13 @@ void startWindows() {
                 LoginWindowEvents(window, loginWindow, login_screen, main_screen, e);
             }
             if (main_screen) {
-                MainWindowEvents(window, mainWindow, login_screen, main_screen, time_logs_screen, e);
+                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, e);
             }
             if (time_logs_screen) {
                 TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e);
+            }
+            if (project_screen) {
+                ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e);
             }
         }
 
@@ -100,6 +106,12 @@ void startWindows() {
             window.clear();
             window.draw(background);
             timesWindow->drawTo(window);
+            window.display();
+        }
+        else if (project_screen) {
+            window.clear();
+            window.draw(background);
+            projectWindow->drawTo(window);
             window.display();
         }
     }

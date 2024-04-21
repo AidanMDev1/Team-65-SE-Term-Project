@@ -51,6 +51,14 @@ public:
         text.setPosition({xp, yp});
     }
 
+    void setText(std::string t) {
+        text.setString(t);
+    }
+
+    std::string getText() {
+        return text.getString();
+    }
+
     void drawTo(sf::RenderWindow& window) {
         window.draw(button);
         window.draw(text);

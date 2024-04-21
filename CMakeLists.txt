@@ -9,7 +9,12 @@ set(SOURCE_FILES
         src/UserAccount.cpp
         src/UserRoles.cpp
         src/Textbox.h
-        src/Button.h)
+        src/Button.h
+        src/Windows.h
+        src/LoginWindow.h
+        src/MainWindow.h
+        src/TimesWindow.h
+        src/ProjectWindow.h)
 
 add_executable(ProjectBase ${SOURCE_FILES})
 

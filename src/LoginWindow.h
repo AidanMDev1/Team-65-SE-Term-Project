@@ -13,6 +13,7 @@ public:
     Textbox username_tbox = Textbox(20, {300, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
     Textbox password_tbox = Textbox(20, {300, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
     Button login_btn;
+
     LoginWindow() { }
     LoginWindow(sf::Font& font) {
         title = Button("QuestClock", 75, sf::Color(64, 156, 120));
