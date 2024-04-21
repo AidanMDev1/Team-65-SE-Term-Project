@@ -1,8 +1,34 @@
-cmake_minimum_required(VERSION 3.0)
+set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.14)
 project(Database)
 
-find_package(CURL REQUIRED)
+set(SOURCE_FILES
+        src/main.cpp
+        src/UserAccount.h
+        src/UserAccount.cpp
+        src/UserRoles.cpp
+        src/Textbox.h
+        src/Button.h
+        src/Windows.h
+        src/LoginWindow.h
+        src/MainWindow.h
+        src/TimesWindow.h
+        request.h
+        request.cpp)
 
-add_executable(run backendtest.cpp request.h request.cpp)
+set(SFML_DIR C:SFML/lib/cmake/SFML)
 
-target_link_libraries(run CURL::libcurl)
+find_package(SFML COMPONENTS system window graphics network audio REQUIRED)
+find_package(CURL REQUIRED) 
+
+add_executable(run ${SOURCE_FILES})
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+set(SFML_STATIC_LIBRARIES TRUE)
+set(SFML_DIR "C:/SFML/lib/cmake/SFML")
+
+include_directories(c:/SFML/include)
+
+target_link_libraries(run CURL::libcurl sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
+
