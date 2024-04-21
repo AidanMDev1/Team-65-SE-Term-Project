@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "Textbox.h"
 #include "Button.h"
+#include "request.h"
 
 
 class LoginWindow {
@@ -85,8 +86,22 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, bool&
 
         if (loginWindow->login_btn.isMouseOver(window)) {
             std::cout << "Username: " << loginWindow->username_tbox.getText() << "\n" << "Password: " << loginWindow->password_tbox.getText() << std::endl;
-            login_screen = false;
-            main_screen = true;
+            request req;
+            bool check = false;
+            string username = loginWindow->username_tbox.getText();
+            string password = loginWindow->password_tbox.getText();
+            check = req.login(username, password);
+            
+            if (check && !username.empty() &&  !password.empty()){
+                std::cout << "login successful" << std::endl;
+                login_screen = false;
+                main_screen = true;
+            }
+            else{
+                std::cout << "login unsuccessful" << std::endl;
+                login_screen = true;
+                main_screen = false;
+            }
         }
     }
 }
