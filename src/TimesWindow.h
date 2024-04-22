@@ -21,7 +21,7 @@ public:
     sf::RectangleShape specific_bckgrnd;
 
     TimesWindow() { }
-    TimesWindow(sf::Font& font) {
+    TimesWindow(sf::Font& font, request req) {
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
         back_btn.setTexture(back_img);
         back_btn.setScale({0.15, 0.15});
@@ -143,7 +143,7 @@ public:
 };
 
 
-void TimesWindowEvents(sf::RenderWindow& window, TimesWindow* timesWindow, bool& login_screen, bool& main_screen, bool& time_logs_screen, sf::Event& e) {
+void TimesWindowEvents(sf::RenderWindow& window, TimesWindow* timesWindow, bool& login_screen, bool& main_screen, bool& time_logs_screen, sf::Event& e, request req) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
         if (timesWindow->sign_out_btn.isMouseOver(window)) {

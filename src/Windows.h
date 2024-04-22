@@ -8,6 +8,8 @@
 #include "MainWindow.h"
 #include "TimesWindow.h"
 #include "ProjectWindow.h"
+#include "AchNotWindow.h"
+#include "request.h"
 
 // inspired by https://youtu.be/T31MoLJws4U?si=_h8ujkH34nowKIoB
 
@@ -15,11 +17,13 @@
 #define HEIGHT 900 // window height
 
 void startWindows() {
+    request req;
     // WINDOW booleans
     bool login_screen = true;
     bool main_screen = false;
     bool time_logs_screen = false;
     bool project_screen = false;
+    bool ach_not_screen = false;
 
     // default info for the windows
     sf::RenderWindow window;
@@ -35,13 +39,14 @@ void startWindows() {
 
     // dif window screens
     sf::Font CNR;
-    CNR.loadFromFile("Courier New Regular.ttf"); // inside cmake-build-debug in CLion
+    CNR.loadFromFile("files/Courier New Regular.ttf"); // inside cmake-build-debug in CLion
 
     // dif windows
-    LoginWindow* loginWindow = new LoginWindow(CNR);
-    MainWindow* mainWindow = new MainWindow(CNR);
-    TimesWindow* timesWindow = new TimesWindow(CNR);
-    ProjectWindow* projectWindow = new ProjectWindow(CNR, "Test", "test");
+    LoginWindow* loginWindow = new LoginWindow(CNR, req);
+    MainWindow* mainWindow = new MainWindow(CNR, req);
+    TimesWindow* timesWindow = new TimesWindow(CNR, req);
+    ProjectWindow* projectWindow = new ProjectWindow(CNR, req);
+    AchNotWindow* achNotWindow = new AchNotWindow(CNR);
 
     // Window loop
     while (window.isOpen()) {
@@ -68,24 +73,27 @@ void startWindows() {
                 window.close();
             }
             if (login_screen) {
-                LoginWindowEvents(window, loginWindow, login_screen, main_screen, e);
+                LoginWindowEvents(window, loginWindow, mainWindow, login_screen, main_screen, e, req);
             }
             if (main_screen) {
-                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, e);
+                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req);
             }
             if (time_logs_screen) {
-                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e);
+                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e, req);
             }
             if (project_screen) {
-                ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e);
+                ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e, req);
+            }
+            if (ach_not_screen) {
+                AchNotWindowEvents(window, achNotWindow, login_screen, main_screen, ach_not_screen, e);
             }
         }
 
         // displays for each screen
-        //FIXME might need to figure out a way to relieve the pointers and delete stuff
+        // FIXME might need to figure out a way to relieve the pointers and delete stuff
         if (login_screen) {
             if (loginWindow == nullptr) {
-                loginWindow = new LoginWindow(CNR);
+                loginWindow = new LoginWindow(CNR, req);
             }
             window.clear();
             window.draw(background);
@@ -112,6 +120,12 @@ void startWindows() {
             window.clear();
             window.draw(background);
             projectWindow->drawTo(window);
+            window.display();
+        }
+        else if (ach_not_screen) {
+            window.clear();
+            window.draw(background);
+            achNotWindow->drawTo(window);
             window.display();
         }
     }

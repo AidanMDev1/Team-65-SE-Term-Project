@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Button.h"
+#include "request.h"
 
 class ProjectWindow {
 public:
@@ -19,9 +20,9 @@ public:
     std::string proj_desc = "This is a test project.\nAssigned:\nAidan\nBrian\nAbigail\nAkeeb";
 
     ProjectWindow() { }
-    ProjectWindow(sf::Font& font, std::string title, std::string description) {
-        proj_title = title;
-        proj_desc = description;
+    ProjectWindow(sf::Font& font, request req) {
+        // proj_title = title;
+        // proj_desc = description;
 
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
         back_btn.setTexture(back_img);
@@ -87,7 +88,7 @@ public:
     }
 };
 
-void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& project_screen, sf::Event& e) {
+void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& project_screen, sf::Event& e, request req) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
         if (projectWindow->sign_out_btn.isMouseOver(window)) {
@@ -140,9 +141,31 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
         }
         if (projectWindow->assign_user_btn.isMouseOver(window)) {
             std::cout << "-> Assign User Pop-up" << std::endl;
+            sf::RenderWindow assign_user_window(sf::VideoMode(400, 400), "Assign Users", sf::Style::Titlebar | sf::Style::Close);
+            while (assign_user_window.isOpen()) {
+                sf::Event event;
+                while (assign_user_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        assign_user_window.close();
+                    }
+                }
+                assign_user_window.clear(sf::Color(230, 230, 230));
+                assign_user_window.display();
+            }
         }
         if (projectWindow->edit_btn.isMouseOver(window)) {
             std::cout << "-> Edit Project Pop-up" << std::endl;
+            sf::RenderWindow edit_proj_window(sf::VideoMode(400, 400), "Edit Project", sf::Style::Titlebar | sf::Style::Close);
+            while (edit_proj_window.isOpen()) {
+                sf::Event event;
+                while (edit_proj_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        edit_proj_window.close();
+                    }
+                }
+                edit_proj_window.clear(sf::Color(230, 230, 230));
+                edit_proj_window.display();
+            }
         }
         if (projectWindow->isMouseOverBack(window)) {
             std::cout << "-> Main Screen" << std::endl;

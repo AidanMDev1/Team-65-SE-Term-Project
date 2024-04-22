@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <vector>
 #include <curl/curl.h>
 using namespace std;
 
@@ -9,12 +10,12 @@ private:
     CURL *curl;
     CURLcode res;
     string url = "http://localhost:6500/";
+
+public:
     string username;
     string password;
     string user_role;
-    string assigned_projects = {};
-
-public:
+    std::vector<std::string> assigned_projects;
     string get_allusers();
     bool login(string user, string pass);
     bool create_user(string user, string pass, string role, string project);

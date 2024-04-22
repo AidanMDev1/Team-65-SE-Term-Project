@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "Button.h"
 #include "ProjectWindow.h"
+#include "request.h"
 
 class MainWindow {
 public:
@@ -19,9 +20,11 @@ public:
     Button achvmts_notif_btn;
     Button access_logs_btn;
     std::vector<Button> lo_proj;
+    request req;
 
     MainWindow() { }
-    MainWindow(sf::Font& font) {
+    MainWindow(sf::Font& font, request req) {
+        
         f = font;
 
         welcome_txt = Button("WELCOME! Unlock Time's Potential with QuestClock!", 25, sf::Color(64, 156, 120));
@@ -41,16 +44,34 @@ public:
         proj_bckgrnd.setFillColor(sf::Color(146, 176, 164));
 
         //this is where we show all projects that are selectable
-        Button test1 = Button("TEST1 : First test of them all.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        test1.setPosition({50, 160});
-        test1.setFont(font);
 
-        Button test2 = Button("TEST2 : 2nd test for all 'em.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        test2.setPosition({50, 160 + 75});
-        test2.setFont(font);
+        //THIS DOESNT WORK WE NEED TO FIGURE OUT HOW TO PASS THE USER INFO INTO THIS PAGE FROM LOGIN
+        // for (int i = 0; i < req.assigned_projects.size(); i++){
+        //     std::cout << req.assigned_projects[i] << std::endl;
+        //     Button test = Button(req.assigned_projects[i], {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+        //     test.setPosition({50, 160 + 75*i});
+        //     test.setFont(font);
+        //     lo_proj.push_back(test);
+        // }
+        
+        for (int i = 0; i < 4; i++){
+            Button test = Button("Project" + to_string(i), {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+            test.setPosition({50, int(160 + (75 * i))});
+            test.setFont(font);
+            lo_proj.push_back(test);
+        };
 
-        lo_proj.push_back(test1);
-        lo_proj.push_back(test2);
+        // OLD TEST PROJECT LIST
+        // Button test1 = Button("TEST1 : First test of them all.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+        // test1.setPosition({50, 160});
+        // test1.setFont(font);
+
+        // Button test2 = Button("TEST2 : 2nd test for all 'em.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+        // test2.setPosition({50, 160 + 75});
+        // test2.setFont(font);
+
+        // lo_proj.push_back(test1);
+        // lo_proj.push_back(test2);
 
         pgdown_img.loadFromFile("files/page_down.png");
 
@@ -110,7 +131,7 @@ public:
     }
 };
 
-void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& time_logs_screen, bool& project_screen, sf::Event& e) {
+void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& time_logs_screen, bool& project_screen, bool& ach_not_screen, sf::Event& e, request req) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
         if (mainWindow->sign_out_btn.isMouseOver(window)) {
@@ -170,11 +191,62 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             login_screen = true;
             main_screen = false;
         }
+
+        if (mainWindow->contact_btn.isMouseOver(window)) {
+            sf::RenderWindow contact_window(sf::VideoMode(400, 400), "Contact a User", sf::Style::Titlebar | sf::Style::Close);
+            while (contact_window.isOpen()) {
+                sf::Event event;
+                while (contact_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        contact_window.close();
+                    }
+                }
+                contact_window.clear(sf::Color(230, 230, 230));
+                contact_window.display();
+            }
+        }
+
+        if (mainWindow->create_users_btn.isMouseOver(window)) {
+            sf::RenderWindow create_users_window(sf::VideoMode(400, 400), "Create a User", sf::Style::Titlebar | sf::Style::Close);
+            while (create_users_window.isOpen()) {
+                sf::Event event;
+                while (create_users_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        create_users_window.close();
+                    }
+                }
+                create_users_window.clear(sf::Color(230, 230, 230));
+                create_users_window.display();
+            }
+        }
+
+        if (mainWindow->create_proj_btn.isMouseOver(window)) {
+            sf::RenderWindow create_proj_window(sf::VideoMode(400, 400), "Create and Assign a Project", sf::Style::Titlebar | sf::Style::Close);
+            while (create_proj_window.isOpen()) {
+                sf::Event event;
+                while (create_proj_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        create_proj_window.close();
+                    }
+                }
+                create_proj_window.clear(sf::Color(230, 230, 230));
+                create_proj_window.display();
+            }
+        }
+
+
         if (mainWindow->access_logs_btn.isMouseOver(window)) {
             std::cout << "-> Timelog Screen" << std::endl;
             time_logs_screen = true;
             main_screen = false;
         }
+
+        if (mainWindow->achvmts_notif_btn.isMouseOver(window)) {
+            std::cout << "-> Achievements/Notifications Screen" << std::endl;
+            ach_not_screen = true;
+            main_screen = false;
+        }
+
         if (mainWindow->isMouseOverProjPD(window)) {
             std::cout << "Projects page down" << std::endl;
         }
@@ -202,7 +274,7 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                 std::cout << "Title: " + title + "\nDescription: " + description << std::endl;
 
                 delete projectWindow;
-                projectWindow =  new ProjectWindow(mainWindow->f, title, description);
+                projectWindow = new ProjectWindow(mainWindow->f, req);
 
                 project_screen = true;
                 main_screen = false;
