@@ -1,0 +1,3 @@
+C:/Users/agant/CLionProjects/Database/Team-65-SE-Term-Project/CMakeFiles/run.dir
+C:/Users/agant/CLionProjects/Database/Team-65-SE-Term-Project/CMakeFiles/edit_cache.dir
+C:/Users/agant/CLionProjects/Database/Team-65-SE-Term-Project/CMakeFiles/rebuild_cache.dir

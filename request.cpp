@@ -1,12 +1,9 @@
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <vector>
-#define CURL_STATICLIB
-#include "curl/curl.h"
+#include <curl/curl.h>
 #include "request.h"
 
-using namespace std;
 size_t write_callback(void *ptr, size_t size, size_t nmemb, string *data) 
 {
     size_t total_size = size * nmemb;
@@ -44,7 +41,7 @@ bool request::login(string user, string pass)
     string param = "api/login/" + user + "/" + pass;
     string req = url + param;
     string response_data;
-    vector<string> user_info;
+
     curl = curl_easy_init();
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
@@ -62,51 +59,52 @@ bool request::login(string user, string pass)
 
         curl_easy_cleanup(curl);
     }
-    
     //parse through response_data to find user details and store into request class variables
     //since rn it returns smth like {["id":"someid", "username":"someusername", "password":"somepassword", etc.]}
-
-    string delimiter = ", ";
+    string delimiter = ",";
     size_t pos_start = 0, pos_end, delim_length = delimiter.length();
     std::string token;
     std::vector<std::string> res;
+    size_t start = 0;
 
-    while ((pos_end = response_data.find(delimiter, pos_start)) != std::string::npos) {
-        token = response_data.substr (pos_start, pos_end - pos_start);
-        pos_start = pos_end + delim_length;
-        res.push_back (token);
+    for (size_t found = response_data.find(delimiter); found != string::npos; found = response_data.find(delimiter, start))
+    {
+        res.emplace_back(response_data.begin() + start, response_data.begin() + found);
+        start = found + delimiter.size();
+    }
+    if (start != response_data.size()){
+         res.emplace_back(response_data.begin() + start, response_data.end());
     }
 
-    res.push_back (response_data.substr (pos_start));
-
-    res[0] = res[0].substr(2, res[0].length());
-
+    res[0].erase(res[0].begin()); //erase first bracket
+    res[res.size()-1].erase(res[res.size()-1].end()-1); //erase last bracket
+   
     std::vector<std::string> res2;
     std::string temp2;
-    std::cout << res[0] << std::endl;
-     username = user;
 
     for (int i = 0; i<res.size(); i++){
-         std::cout << res[i] << std::endl;
         for(int j = 0; j<res[i].size(); j++){ //"id":"name"
             if(res[i].at(j) == ':'){ //:"name"
-                
                 string temp = res[i]; // "id":"name"
-                temp2 = temp.substr(j + 2, res[i].length() - 1); //name
+                temp2 = temp.substr(j + 1, res[i].length() - 1); //name
                 res2.push_back(temp2);
             }
         }
     }
 
-    username = res2[1]; //
+    for(int i = 0; i<res2.size()-1; i++){
+        size_t quotes = res2[i].find("\"");
+        res2[i].erase(res2[i].begin() + quotes);
+
+        size_t quotes2 = res2[i].find("\"");
+        res2[i].erase(res2[i].begin() + quotes2);
+    }
+
+    username = res2[1]; 
     password = res2[2];
     user_role = res2[3];
-    assigned_projects = res[4]; //the assigned_projects parsing part might not work 
-
-    //username = user
-    //passward=pass;
-    //user_role=role;
-    //assigned_projects=projects;
+    assigned_projects = res2[4]; //assigned as [projectName], if error check this first
+    
     return true;
 };
 
@@ -238,5 +236,54 @@ bool request::delete_notification(string user, string notif)
         curl_easy_cleanup(curl);
     }
     return true;
-};
+}
+bool request::clockin(string user, string project)
+{
+    string param = "api/clockin/" + user + "/" + project;
+    string req = url + param;
+    string response_data;
 
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+}
+bool request::clockout(string user, string project)
+{
+    string param = "api/clockout/" + user + "/" + project;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+};
