@@ -110,7 +110,8 @@ public:
     }
 };
 
-void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& time_logs_screen, bool& project_screen, sf::Event& e) {
+void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen,
+                      bool& main_screen, bool& time_logs_screen, bool& project_screen, bool& ach_not_screen, sf::Event& e) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
         if (mainWindow->sign_out_btn.isMouseOver(window)) {
@@ -170,11 +171,62 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             login_screen = true;
             main_screen = false;
         }
+
+        if (mainWindow->contact_btn.isMouseOver(window)) {
+            sf::RenderWindow contact_window(sf::VideoMode(400, 400), "Contact a User", sf::Style::Titlebar | sf::Style::Close);
+            while (contact_window.isOpen()) {
+                sf::Event event;
+                while (contact_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        contact_window.close();
+                    }
+                }
+                contact_window.clear(sf::Color(230, 230, 230));
+                contact_window.display();
+            }
+        }
+
+        if (mainWindow->create_users_btn.isMouseOver(window)) {
+            sf::RenderWindow create_users_window(sf::VideoMode(400, 400), "Create a User", sf::Style::Titlebar | sf::Style::Close);
+            while (create_users_window.isOpen()) {
+                sf::Event event;
+                while (create_users_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        create_users_window.close();
+                    }
+                }
+                create_users_window.clear(sf::Color(230, 230, 230));
+                create_users_window.display();
+            }
+        }
+
+        if (mainWindow->create_proj_btn.isMouseOver(window)) {
+            sf::RenderWindow create_proj_window(sf::VideoMode(400, 400), "Create and Assign a Project", sf::Style::Titlebar | sf::Style::Close);
+            while (create_proj_window.isOpen()) {
+                sf::Event event;
+                while (create_proj_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        create_proj_window.close();
+                    }
+                }
+                create_proj_window.clear(sf::Color(230, 230, 230));
+                create_proj_window.display();
+            }
+        }
+
+
         if (mainWindow->access_logs_btn.isMouseOver(window)) {
             std::cout << "-> Timelog Screen" << std::endl;
             time_logs_screen = true;
             main_screen = false;
         }
+
+        if (mainWindow->achvmts_notif_btn.isMouseOver(window)) {
+            std::cout << "-> Achievements/Notifications Screen" << std::endl;
+            ach_not_screen = true;
+            main_screen = false;
+        }
+
         if (mainWindow->isMouseOverProjPD(window)) {
             std::cout << "Projects page down" << std::endl;
         }

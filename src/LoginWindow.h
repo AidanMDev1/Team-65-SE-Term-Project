@@ -19,15 +19,19 @@ public:
         title = Button("QuestClock", 75, sf::Color(64, 156, 120));
         title.setPosition({250, 100});
         title.setFont(font);
+
         username_txt = Button("Username:", 20, sf::Color(64, 156, 120));
         username_txt.setPosition({50, 300});
         username_txt.setFont(font);
+
         password_txt = Button("Password:", 20, sf::Color(64, 156, 120));
         password_txt.setPosition({50, 400});
         password_txt.setFont(font);
+
         username_tbox.setFont(font);
         username_tbox.setPosition({200, 300}); // FIXME: limits need fixing when it comes to deletion
         password_tbox.setFont(font);
+
         password_tbox.setPosition({200, 400});
         login_btn = Button("Login", {200, 50}, 30, sf::Color::White, sf::Color::Black);
         login_btn.setPosition({200, 500});

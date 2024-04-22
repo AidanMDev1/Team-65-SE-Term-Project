@@ -24,6 +24,7 @@ public:
         proj_desc = description;
 
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
+
         back_btn.setTexture(back_img);
         back_btn.setScale({0.15, 0.15});
 
@@ -140,9 +141,31 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
         }
         if (projectWindow->assign_user_btn.isMouseOver(window)) {
             std::cout << "-> Assign User Pop-up" << std::endl;
+            sf::RenderWindow assign_user_window(sf::VideoMode(400, 400), "Assign Users", sf::Style::Titlebar | sf::Style::Close);
+            while (assign_user_window.isOpen()) {
+                sf::Event event;
+                while (assign_user_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        assign_user_window.close();
+                    }
+                }
+                assign_user_window.clear(sf::Color(230, 230, 230));
+                assign_user_window.display();
+            }
         }
         if (projectWindow->edit_btn.isMouseOver(window)) {
             std::cout << "-> Edit Project Pop-up" << std::endl;
+            sf::RenderWindow edit_proj_window(sf::VideoMode(400, 400), "Edit Project", sf::Style::Titlebar | sf::Style::Close);
+            while (edit_proj_window.isOpen()) {
+                sf::Event event;
+                while (edit_proj_window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed) {
+                        edit_proj_window.close();
+                    }
+                }
+                edit_proj_window.clear(sf::Color(230, 230, 230));
+                edit_proj_window.display();
+            }
         }
         if (projectWindow->isMouseOverBack(window)) {
             std::cout << "-> Main Screen" << std::endl;

@@ -8,6 +8,7 @@
 #include "MainWindow.h"
 #include "TimesWindow.h"
 #include "ProjectWindow.h"
+#include "AchNotWindow.h"
 
 // inspired by https://youtu.be/T31MoLJws4U?si=_h8ujkH34nowKIoB
 
@@ -20,6 +21,7 @@ void startWindows() {
     bool main_screen = false;
     bool time_logs_screen = false;
     bool project_screen = false;
+    bool ach_not_screen = false;
 
     // default info for the windows
     sf::RenderWindow window;
@@ -35,13 +37,14 @@ void startWindows() {
 
     // dif window screens
     sf::Font CNR;
-    CNR.loadFromFile("Courier New Regular.ttf"); // inside cmake-build-debug in CLion
+    CNR.loadFromFile("files/Courier New Regular.ttf"); // inside cmake-build-debug in CLion
 
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR);
     MainWindow* mainWindow = new MainWindow(CNR);
     TimesWindow* timesWindow = new TimesWindow(CNR);
     ProjectWindow* projectWindow = new ProjectWindow(CNR, "Test", "test");
+    AchNotWindow* achNotWindow = new AchNotWindow(CNR);
 
     // Window loop
     while (window.isOpen()) {
@@ -71,13 +74,16 @@ void startWindows() {
                 LoginWindowEvents(window, loginWindow, login_screen, main_screen, e);
             }
             if (main_screen) {
-                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, e);
+                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e);
             }
             if (time_logs_screen) {
                 TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e);
             }
             if (project_screen) {
                 ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e);
+            }
+            if (ach_not_screen) {
+                AchNotWindowEvents(window, achNotWindow, login_screen, main_screen, ach_not_screen, e);
             }
         }
 
@@ -112,6 +118,12 @@ void startWindows() {
             window.clear();
             window.draw(background);
             projectWindow->drawTo(window);
+            window.display();
+        }
+        else if (ach_not_screen) {
+            window.clear();
+            window.draw(background);
+            achNotWindow->drawTo(window);
             window.display();
         }
     }
