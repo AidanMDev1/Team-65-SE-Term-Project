@@ -52,9 +52,7 @@ app.get('/api/clockout/:user/:proj', async (req,res) => {
     try {
         const { user, proj } = req.params;
         const time = new Date().toLocaleDateString([], {hour:'2-digit', minute:'2-digit'});
-       // const total_time = await Time.findOne({username: user, project:proj }, {clockin: }); //calculating total time
         const clock_out = await Time.findOneAndUpdate({username: user, project: proj}, {clockout: [time]});
-
         res.status(200).json(clock_out);
     } catch (error) {
         res.status(500).json({message: error.message});  
