@@ -6,6 +6,10 @@ const NotificationSchema = mongoose.Schema(
             type: String,
             require: true,
         },
+        sender: {
+            type: String,
+            require:true
+        },
         notification: {
             type: String,
             require: true
