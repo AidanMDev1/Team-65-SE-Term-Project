@@ -8,8 +8,12 @@ public:
     sf::Texture back_img;
     sf::Sprite back_btn;
     sf::Texture pgdown_img;
+    sf::Texture pgup_img;
+    sf::Sprite time_pgup_btn;
     sf::Sprite time_pgdown_btn;
+    sf::Sprite spcfc_pgup_btn;
     sf::Sprite spcfc_pgdown_btn;
+    sf::Sprite emp_pgup_btn;
     sf::Sprite emp_pgdown_btn;
     Button sign_out_btn;
     Button time_logs_txt;
@@ -27,14 +31,27 @@ public:
         back_btn.setScale({0.15, 0.15});
 
         pgdown_img.loadFromFile("files/page_down.png");
+        pgup_img.loadFromFile("files/page_up.png");
+
+        time_pgup_btn.setTexture(pgup_img);
+        time_pgup_btn.setScale({0.1, 0.1});
+        time_pgup_btn.setPosition({290, 160});
 
         time_pgdown_btn.setTexture(pgdown_img);
         time_pgdown_btn.setScale({0.1, 0.1});
         time_pgdown_btn.setPosition({290, 480});
 
+        spcfc_pgup_btn.setTexture(pgup_img);
+        spcfc_pgup_btn.setScale({0.05, 0.05});
+        spcfc_pgup_btn.setPosition({725, 160});
+
         spcfc_pgdown_btn.setTexture(pgdown_img);
         spcfc_pgdown_btn.setScale({0.05, 0.05});
         spcfc_pgdown_btn.setPosition({725, 510});
+
+        emp_pgup_btn.setTexture(pgup_img);
+        emp_pgup_btn.setScale({0.05, 0.05});
+        emp_pgup_btn.setPosition({210, 640});
 
         emp_pgdown_btn.setTexture(pgdown_img);
         emp_pgdown_btn.setScale({0.05, 0.05});
@@ -80,8 +97,11 @@ public:
         window.draw(specific_bckgrnd);
         window.draw(back_btn);
         window.draw(time_pgdown_btn);
+        window.draw(time_pgup_btn);
         window.draw(spcfc_pgdown_btn);
+        window.draw(spcfc_pgup_btn);
         window.draw(emp_pgdown_btn);
+        window.draw(emp_pgup_btn);
         sign_out_btn.drawTo(window);
         time_logs_txt.drawTo(window);
         employee_txt.drawTo(window);
@@ -115,6 +135,19 @@ public:
         return false;
     }
 
+    bool isMouseOverTimePU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = time_pgup_btn.getPosition().x;
+        float btn_pos_y = time_pgup_btn.getPosition().y;
+        float btn_xpos_width = time_pgup_btn.getPosition().x + time_pgup_btn.getLocalBounds().width * 0.1;
+        float btn_xpos_height = time_pgup_btn.getPosition().y + time_pgup_btn.getLocalBounds().height * 0.1;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
     bool isMouseOverEmpPD(sf::RenderWindow& window) {
         float mouse_x = sf::Mouse::getPosition(window).x;
         float mouse_y = sf::Mouse::getPosition(window).y;
@@ -128,6 +161,19 @@ public:
         return false;
     }
 
+    bool isMouseOverEmpPU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = emp_pgup_btn.getPosition().x;
+        float btn_pos_y = emp_pgup_btn.getPosition().y;
+        float btn_xpos_width = emp_pgup_btn.getPosition().x + emp_pgup_btn.getLocalBounds().width * 0.05;
+        float btn_xpos_height = emp_pgup_btn.getPosition().y + emp_pgup_btn.getLocalBounds().height * 0.05;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
     bool isMouseOverSpcPD(sf::RenderWindow& window) {
         float mouse_x = sf::Mouse::getPosition(window).x;
         float mouse_y = sf::Mouse::getPosition(window).y;
@@ -135,6 +181,19 @@ public:
         float btn_pos_y = spcfc_pgdown_btn.getPosition().y;
         float btn_xpos_width = spcfc_pgdown_btn.getPosition().x + spcfc_pgdown_btn.getLocalBounds().width * 0.05;
         float btn_xpos_height = spcfc_pgdown_btn.getPosition().y + spcfc_pgdown_btn.getLocalBounds().height * 0.05;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
+    bool isMouseOverSpcPU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = spcfc_pgup_btn.getPosition().x;
+        float btn_pos_y = spcfc_pgup_btn.getPosition().y;
+        float btn_xpos_width = spcfc_pgup_btn.getPosition().x + spcfc_pgup_btn.getLocalBounds().width * 0.05;
+        float btn_xpos_height = spcfc_pgup_btn.getPosition().y + spcfc_pgup_btn.getLocalBounds().height * 0.05;
         if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
             return true;
         }
@@ -184,11 +243,20 @@ void TimesWindowEvents(sf::RenderWindow& window, TimesWindow* timesWindow, bool&
             main_screen = true;
             time_logs_screen = false;
         }
+        if (timesWindow->isMouseOverTimePU(window)) {
+            std::cout << "Time page up" << std::endl;
+        }
         if (timesWindow->isMouseOverTimePD(window)) {
             std::cout << "Time page down" << std::endl;
         }
+        if (timesWindow->isMouseOverEmpPU(window)) {
+            std::cout << "Employee page up" << std::endl;
+        }
         if (timesWindow->isMouseOverEmpPD(window)) {
             std::cout << "Employee page down" << std::endl;
+        }
+        if (timesWindow->isMouseOverSpcPU(window)) {
+            std::cout << "Specific page up" << std::endl;
         }
         if (timesWindow->isMouseOverSpcPD(window)) {
             std::cout << "Specific page down" << std::endl;
