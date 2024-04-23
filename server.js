@@ -95,10 +95,10 @@ app.get('/api/notifications/:user', async (req,res) => {
 });
 
 //functionality for admins and managers to notify other users
-app.get('/api/send_notification/:user/:notif', async (req,res) => {
+app.get('/api/send_notification/:user/:from/:notif', async (req,res) => {
     try {
-        const { user, notif } = req.params;
-        const notify = await Notification.create({username: user, notification: notif});
+        const { user, from, notif } = req.params;
+        const notify = await Notification.create({username: user, sender: from, notification: notif});
         res.status(200).json(notify);
     } catch (error) {
         res.status(500).json({message: error.message}); 
@@ -127,6 +127,28 @@ app.get('/api/create_user/:user/:pass/:pos/:proj1', async (req,res) => {
     }
 });
 
+//functionality to check if a user exists in db
+app.get('/api/check_user/:user', async (req,res) => {
+    try {
+        const { user } = req.params;
+        const check_user = await User.findOne({username: user});
+        res.status(200).json(check_user);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality for admins to assign projects to users
+app.get('/api/assign_user/:user/:proj', async (req,res) => {
+    try {
+        const { user, proj } = req.params;
+        const assign_user = await User.findOneAndUpdate({username: user}, {$push: {projects: proj}});
+        res.status(200).json(assign_user);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
 //functionality for admins to delete/fire users
 app.get('/api/delete_user/:user', async (req, res) => {
     try {
@@ -138,21 +160,45 @@ app.get('/api/delete_user/:user', async (req, res) => {
     }
 });
 
+//functionality to create projects
 app.get('/api/create_project/:proj/:manager/:cli', async (req, res) => {
     try {
         const { proj, manager, cli } = req.params;
-        const proj_create = await Project.create({project_name: proj, project_manager: manager, client: cli});
-        res.status(200).json(proj_create);
+        const create_project = await Project.create({project_name: proj, project_manager: manager, client: cli});
+        res.status(200).json(create_project);
     } catch (error) {
         res.status(500).json({message: error.message}); 
     }
 });
 
+//functionality to edit a project's manager and client
+app.get('/api/edit_project/:proj/:manager/:cli', async (req, res) => {
+    try {
+        const { proj, manager, cli } = req.params;
+        const edit_project = await Project.findOneAndUpdate({project_name: proj}, {project_manager: manager, client: cli});
+        res.status(200).json(edit_project);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality to check if a certain project exists
+app.get('/api/check_project/:proj', async (req, res) => {
+    try {
+        const { proj } = req.params;
+        const check_project = await Project.findOne({project_name: proj});
+        res.status(200).json(check_project);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality to get all projects under a given manager
 app.get('/api/manager_projects/:manager', async (req, res) => {
     try {
         const { manager } = req.params;
-        const allproj = await Project.find({project_manager: manager});
-        res.status(200).json(allproj);
+        const manager_projects = await Project.find({project_manager: manager});
+        res.status(200).json(manager_projects);
     } catch (error) {
         res.status(500).json({message: error.message});
     }
