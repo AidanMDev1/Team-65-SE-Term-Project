@@ -21,6 +21,14 @@ public:
         button.setSize(size);
         button.setFillColor(bg_color);
     }
+
+    // button w/o back (just text without interaction or possible interaction)
+    Button(std::string t, int char_size, sf::Color text_color) {
+        text.setString(t);
+        text.setFillColor(text_color);
+        text.setCharacterSize(char_size);
+    }
+
     ~Button() { }
 
     void setFont(sf::Font& font) {
@@ -41,6 +49,14 @@ public:
         float xp = (pos.x + button.getLocalBounds().width / 4) - (text.getLocalBounds().width / 2);
         float yp = (pos.y + button.getLocalBounds().height / 6) - (text.getLocalBounds().height / 2);
         text.setPosition({xp, yp});
+    }
+
+    void setText(std::string t) {
+        text.setString(t);
+    }
+
+    std::string getText() {
+        return text.getString();
     }
 
     void drawTo(sf::RenderWindow& window) {

@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const User = require('./models/user.model.js');
 const Time = require('./models/time.model.js');
 const Notification = require('./models/notification.model.js');
+const Project = require('./models/project.models.js');
 
 const app = express();
 app.use(bodyParser.json());
@@ -35,12 +36,35 @@ app.get('/api/login/:user/:pass', async (req,res) => {
     }
 })
 
-//functionality for clock in
+//functionality to check if a timetable exists
+app.get('/api/check_time/:user/:proj', async (req,res) =>{
+    try {
+        const { user, proj } = req.params;
+        const check_time = await Time.findOne({username: user, project: proj});
+        res.status(200).json(check_time);
+    } catch (error) {
+        res.status(500).json({message: error.message});  
+    }
+});
+
+//functionality for project clock in if it doesnt exist
+app.get('/api/create_clockin/:user/:proj', async (req,res) => {
+    try {
+        const { user, proj } = req.params;
+        const time = new Date().toLocaleDateString([], {hour:'2-digit', minute:'2-digit'});
+        const create_clockin = await Time.create({username: user, project: proj, clockin: [time]});
+        res.status(200).json(create_clockin);
+    } catch (error) {
+        res.status(500).json({message: error.message});  
+    }
+})
+
+//functionality for project clock in if it does exist
 app.get('/api/clockin/:user/:proj', async (req,res) => {
     try {
         const { user, proj } = req.params;
         const time = new Date().toLocaleDateString([], {hour:'2-digit', minute:'2-digit'});
-        const clock_in = await Time.create({username: user, project: proj, clockin: [time]});
+        const clock_in = await Time.findOneAndUpdate({username: user, project: proj}, {$push: {clockin: time}});
         res.status(200).json(clock_in);
     } catch (error) {
         res.status(500).json({message: error.message});  
@@ -52,7 +76,7 @@ app.get('/api/clockout/:user/:proj', async (req,res) => {
     try {
         const { user, proj } = req.params;
         const time = new Date().toLocaleDateString([], {hour:'2-digit', minute:'2-digit'});
-        const clock_out = await Time.findOneAndUpdate({username: user, project: proj}, {clockout: [time]});
+        const clock_out = await Time.findOneAndUpdate({username: user, project: proj}, {$push: {clockout: time}});
         res.status(200).json(clock_out);
     } catch (error) {
         res.status(500).json({message: error.message});  
@@ -71,10 +95,10 @@ app.get('/api/notifications/:user', async (req,res) => {
 });
 
 //functionality for admins and managers to notify other users
-app.get('/api/send_notification/:user/:notif', async (req,res) => {
+app.get('/api/send_notification/:user/:from/:notif', async (req,res) => {
     try {
-        const { user, notif } = req.params;
-        const notify = await Notification.create({username: user, notification: notif});
+        const { user, from, notif } = req.params;
+        const notify = await Notification.create({username: user, sender: from, notification: notif});
         res.status(200).json(notify);
     } catch (error) {
         res.status(500).json({message: error.message}); 
@@ -95,9 +119,31 @@ app.get('/api/delete_notification/:user/:notif', async (req, res) => {
 //functionality for admins to create new users
 app.get('/api/create_user/:user/:pass/:pos/:proj1', async (req,res) => {
     try {
-        const { user, pass, pos, proj1, proj2 } = req.params;
+        const { user, pass, pos, proj1 } = req.params;
         const createuser = await User.create({username: user, password: pass, role: pos, projects: [proj1]});
         res.status(200).json(createuser);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality to check if a user exists in db
+app.get('/api/check_user/:user', async (req,res) => {
+    try {
+        const { user } = req.params;
+        const check_user = await User.findOne({username: user});
+        res.status(200).json(check_user);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality for admins to assign projects to users
+app.get('/api/assign_user/:user/:proj', async (req,res) => {
+    try {
+        const { user, proj } = req.params;
+        const assign_user = await User.findOneAndUpdate({username: user}, {$push: {projects: proj}});
+        res.status(200).json(assign_user);
     } catch (error) {
         res.status(500).json({message: error.message}); 
     }
@@ -113,6 +159,50 @@ app.get('/api/delete_user/:user', async (req, res) => {
         res.status(500).json({message: error.message}); 
     }
 });
+
+//functionality to create projects
+app.get('/api/create_project/:proj/:manager/:cli', async (req, res) => {
+    try {
+        const { proj, manager, cli } = req.params;
+        const create_project = await Project.create({project_name: proj, project_manager: manager, client: cli});
+        res.status(200).json(create_project);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality to edit a project's manager and client
+app.get('/api/edit_project/:proj/:manager/:cli', async (req, res) => {
+    try {
+        const { proj, manager, cli } = req.params;
+        const edit_project = await Project.findOneAndUpdate({project_name: proj}, {project_manager: manager, client: cli});
+        res.status(200).json(edit_project);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality to check if a certain project exists
+app.get('/api/check_project/:proj', async (req, res) => {
+    try {
+        const { proj } = req.params;
+        const check_project = await Project.findOne({project_name: proj});
+        res.status(200).json(check_project);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+//functionality to get all projects under a given manager
+app.get('/api/manager_projects/:manager', async (req, res) => {
+    try {
+        const { manager } = req.params;
+        const manager_projects = await Project.find({project_manager: manager});
+        res.status(200).json(manager_projects);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
 
 mongoose.connect("mongodb+srv://Team65:ka1o40V2jAj4SstC@questclock.ofavxyx.mongodb.net/QuestClockLogin?retryWrites=true&w=majority&appName=QuestClock")
 .then(() => {

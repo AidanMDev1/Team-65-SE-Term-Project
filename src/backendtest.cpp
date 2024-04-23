@@ -11,11 +11,11 @@ int main(){
 
     //string response = req.get_allusers();
 
-    // test = req.login("Brian", "password");
-    // if (test)
-    // {
-    //     cout << "yippee" << endl;
-    // };
+    test = req.login("Brian", "password");
+    if (test)
+    {
+        cout << "yippee" << endl;
+    };
     
     // test = req.create_user("Brian", "password", "manager", "questclock");
     // if (test)
@@ -53,11 +53,11 @@ int main(){
     //     cout << "yippee" << endl;
     // };
 
-    test = req.clockout("Brian", "questclock");
-    if (test)
-    {
-        cout << "yippee" << endl;
-    };
+    // test = req.clockout("Brian", "questclock");
+    // if (test)
+    // {
+    //     cout << "yippee" << endl;
+    // };
 
     return 0;
 }
