@@ -14,8 +14,6 @@ public:
     sf::Sprite ach_pgdown_btn;
     Button not_txt;
     Button ach_txt;
-    Button create_not_btn;
-    Button create_ach_btn;
     sf::RectangleShape not_bckgrnd;
     sf::RectangleShape ach_bckgrnd;
     std::vector<Button> lo_nots;
@@ -50,14 +48,6 @@ public:
         ach_txt.setPosition({540, 110});
         ach_txt.setFont(font);
 
-        create_not_btn = Button("Create", {200, 40}, 20, sf::Color::White, sf::Color::Black);
-        create_not_btn.setPosition({120, 150});
-        create_not_btn.setFont(font);
-
-        create_ach_btn = Button("Create", {200, 40}, 20, sf::Color::White, sf::Color::Black);
-        create_ach_btn.setPosition({550, 150});
-        create_ach_btn.setFont(font);
-
         not_bckgrnd.setSize({400, 600});
         not_bckgrnd.setPosition({30, 200});
         not_bckgrnd.setFillColor(sf::Color(146, 176, 164));
@@ -88,8 +78,6 @@ public:
         sign_out_btn.drawTo(window);
         not_txt.drawTo(window);
         ach_txt.drawTo(window);
-        create_not_btn.drawTo(window);
-        create_ach_btn.drawTo(window);
         for (auto& notif : lo_nots) {
             notif.drawTo(window);
         }
@@ -148,22 +136,6 @@ void AchNotWindowEvents(sf::RenderWindow& window, AchNotWindow* achNotWindow, bo
             achNotWindow->sign_out_btn.setBackColor(sf::Color::White);
             achNotWindow->sign_out_btn.setTextColor(sf::Color::Black);
         }
-        if (achNotWindow->create_not_btn.isMouseOver(window)) {
-            achNotWindow->create_not_btn.setBackColor(sf::Color(64, 156, 120));
-            achNotWindow->create_not_btn.setTextColor(sf::Color::White);
-        }
-        else {
-            achNotWindow->create_not_btn.setBackColor(sf::Color::White);
-            achNotWindow->create_not_btn.setTextColor(sf::Color::Black);
-        }
-        if (achNotWindow->create_ach_btn.isMouseOver(window)) {
-            achNotWindow->create_ach_btn.setBackColor(sf::Color(64, 156, 120));
-            achNotWindow->create_ach_btn.setTextColor(sf::Color::White);
-        }
-        else {
-            achNotWindow->create_ach_btn.setBackColor(sf::Color::White);
-            achNotWindow->create_ach_btn.setTextColor(sf::Color::Black);
-        }
     }
 
     if (e.type == sf::Event::MouseButtonPressed) {
@@ -171,34 +143,6 @@ void AchNotWindowEvents(sf::RenderWindow& window, AchNotWindow* achNotWindow, bo
             std::cout << "-> Login Screen" << std::endl;
             login_screen = true;
             ach_not_screen = false;
-        }
-        if (achNotWindow->create_not_btn.isMouseOver(window)) {
-            std::cout << "-> Create Notification/Contact Pop-up" << std::endl;
-            sf::RenderWindow not_window(sf::VideoMode(400, 400), "Send A Message", sf::Style::Titlebar | sf::Style::Close);
-            while (not_window.isOpen()) {
-                sf::Event event;
-                while (not_window.pollEvent(event)) {
-                    if (event.type == sf::Event::Closed) {
-                        not_window.close();
-                    }
-                }
-                not_window.clear(sf::Color(230, 230, 230));
-                not_window.display();
-            }
-        }
-        if (achNotWindow->create_ach_btn.isMouseOver(window)) {
-            std::cout << "-> Create Achievement Pop-up" << std::endl;
-            sf::RenderWindow ach_window(sf::VideoMode(400, 400), "Create and Assign Achievements", sf::Style::Titlebar | sf::Style::Close);
-            while (ach_window.isOpen()) {
-                sf::Event event;
-                while (ach_window.pollEvent(event)) {
-                    if (event.type == sf::Event::Closed) {
-                        ach_window.close();
-                    }
-                }
-                ach_window.clear(sf::Color(230, 230, 230));
-                ach_window.display();
-            }
         }
         if (achNotWindow->isMouseOverAchPD(window)) {
             std::cout << "Achievement pg down" << std::endl;

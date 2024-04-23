@@ -48,8 +48,6 @@ public:
         proj_bckgrnd.setFillColor(sf::Color(146, 176, 164));
 
         //this is where we show all projects that are selectable
-
-        //THIS DOESNT WORK WE NEED TO FIGURE OUT HOW TO PASS THE USER INFO INTO THIS PAGE FROM LOGIN
         for (int i = 0; i < req.assigned_projects.size(); i++){
             Button test = Button(req.assigned_projects[i], {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
             test.setPosition({50, 160 + 75*i});
@@ -71,8 +69,8 @@ public:
         create_proj_btn.setPosition({30, 670});
         create_proj_btn.setFont(font);
 
-        create_users_btn = Button("Create User", {300, 50}, 25, sf::Color::White, sf::Color::Black);
-        create_users_btn.setPosition({30, 750});
+        create_users_btn = Button("Create/Delete User", {420, 50}, 25, sf::Color::White, sf::Color::Black);
+        create_users_btn.setPosition({30, 730});
         create_users_btn.setFont(font);
 
         achvmts_notif_btn = Button("Achievments/\nNotifications", {300, 100}, 25, sf::Color::White, sf::Color::Black);
@@ -177,45 +175,318 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             main_screen = false;
         }
 
+        //opens contact window for users to message other users
         if (mainWindow->contact_btn.isMouseOver(window)) {
-            sf::RenderWindow contact_window(sf::VideoMode(400, 400), "Contact a User", sf::Style::Titlebar | sf::Style::Close);
+            sf::RectangleShape contact_bckrnd;
+            contact_bckrnd.setSize({600, 400});
+            contact_bckrnd.setFillColor(sf::Color(230, 230, 230)); // GREY
+
+            Button to_txt = Button("To:", 15, sf::Color(64, 156, 120));
+            to_txt.setPosition({30, 30});
+            to_txt.setFont(mainWindow->f);
+
+            Button msg_txt = Button("Message: ", 15, sf::Color(64, 156, 120));
+            msg_txt.setPosition({30, 150});
+            msg_txt.setFont(mainWindow->f);
+
+            Textbox to_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            to_tbox.setFont(mainWindow->f);
+            to_tbox.setPosition({150, 30});
+
+            Textbox msg_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            msg_tbox.setFont(mainWindow->f);
+            msg_tbox.setPosition({150, 150});
+
+            Button send_btn = Button("Send", {100, 50}, 15, sf::Color::White, sf::Color::Black);
+            send_btn.setPosition({200, 200});
+            send_btn.setFont(mainWindow->f);
+
+            sf::RenderWindow contact_window(sf::VideoMode(600, 400), "Contact a User", sf::Style::Titlebar | sf::Style::Close);
+
             while (contact_window.isOpen()) {
-                sf::Event event;
-                while (contact_window.pollEvent(event)) {
-                    if (event.type == sf::Event::Closed) {
-                        contact_window.close();
+                sf::Event contact_event;
+
+
+                // Key Presses and Info
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    to_tbox.setSelected(false);
+                    msg_tbox.setSelected(false);
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                    if (to_tbox.isSelected()) {
+                        to_tbox.setSelected(false);
+                        msg_tbox.setSelected(true);
                     }
                 }
-                contact_window.clear(sf::Color(230, 230, 230));
+
+                while (contact_window.pollEvent(contact_event)) {
+                    if (contact_event.type == sf::Event::Closed) {
+                        contact_window.close();
+                    }
+
+                    if (contact_event.type == sf::Event::TextEntered) {
+                        if (to_tbox.isSelected()) {
+                            to_tbox.typeOn(contact_event);
+                        }
+                        if (msg_tbox.isSelected()) {
+                            msg_tbox.typeOn(contact_event);
+                        }
+                    }
+
+                    if (contact_event.type == sf::Event::MouseMoved) {
+                        if (send_btn.isMouseOver(contact_window)) {
+                            send_btn.setBackColor(sf::Color(64, 156, 120));
+                            send_btn.setTextColor(sf::Color::White);
+                        }
+                        else {
+                            send_btn.setBackColor(sf::Color::White);
+                            send_btn.setTextColor(sf::Color::Black);
+                        }
+                    }
+
+                    if (contact_event.type == sf::Event::MouseButtonPressed) {
+                        // click in username box
+                        if (to_tbox.isMouseOver(contact_window)) {
+                            to_tbox.setSelected(true);
+                            msg_tbox.setSelected(false);
+                        }
+                        else {
+                            to_tbox.setSelected(false);
+                        }
+
+                        // click in password box
+                        if (msg_tbox.isMouseOver(contact_window)) {
+                            msg_tbox.setSelected(true);
+                            to_tbox.setSelected(false);
+                        }
+                        else {
+                            msg_tbox.setSelected(false);
+                        }
+
+                        if (send_btn.isMouseOver(contact_window)) {
+                            std::cout << "To: " << to_tbox.getText() << "\n" << "Message: " << msg_tbox.getText() << std::endl;
+                            contact_window.close();
+                        }
+                    }
+                }
+                contact_window.clear();
+                contact_window.draw(contact_bckrnd);
+                to_txt.drawTo(contact_window);
+                msg_txt.drawTo(contact_window);
+                to_tbox.drawTo(contact_window);
+                msg_tbox.drawTo(contact_window);
+                send_btn.drawTo(contact_window);
                 contact_window.display();
             }
         }
 
-        if (mainWindow->create_users_btn.isMouseOver(window) && (req.user_role == "admin")) {
-            sf::RenderWindow create_users_window(sf::VideoMode(400, 400), "Create a User", sf::Style::Titlebar | sf::Style::Close);
-            while (create_users_window.isOpen()) {
-                sf::Event event;
-                while (create_users_window.pollEvent(event)) {
-                    if (event.type == sf::Event::Closed) {
-                        create_users_window.close();
+        //opens create/delete users window
+        if (mainWindow->create_users_btn.isMouseOver(window) && req.user_role == "admin") {
+            sf::RectangleShape cr_del_bckrnd;
+            cr_del_bckrnd.setSize({600, 400});
+            cr_del_bckrnd.setFillColor(sf::Color(230, 230, 230)); // GREY
+
+            Button user_txt = Button("User:", 15, sf::Color(64, 156, 120));
+            user_txt.setPosition({30, 30});
+            user_txt.setFont(mainWindow->f);
+
+            Textbox user_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            user_tbox.setFont(mainWindow->f);
+            user_tbox.setPosition({150, 30});
+
+            Button create_btn = Button("Create", {100, 50}, 15, sf::Color::White, sf::Color::Black);
+            create_btn.setPosition({100, 200});
+            create_btn.setFont(mainWindow->f);
+
+            Button delete_btn = Button("Delete", {100, 50}, 15, sf::Color::White, sf::Color::Black);
+            delete_btn.setPosition({300, 200});
+            delete_btn.setFont(mainWindow->f);
+
+            sf::RenderWindow cr_del_window(sf::VideoMode(600, 400), "Create or Delete User", sf::Style::Titlebar | sf::Style::Close);
+
+            while (cr_del_window.isOpen()) {
+                sf::Event cr_del_event;
+
+                // Key Presses and Info
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    user_tbox.setSelected(false);
+                }
+
+                while (cr_del_window.pollEvent(cr_del_event)) {
+                    if (cr_del_event.type == sf::Event::Closed) {
+                        cr_del_window.close();
+                    }
+
+                    if (cr_del_event.type == sf::Event::TextEntered) {
+                        if (user_tbox.isSelected()) {
+                            user_tbox.typeOn(cr_del_event);
+                        }
+                    }
+
+                    if (cr_del_event.type == sf::Event::MouseMoved) {
+                        if (create_btn.isMouseOver(cr_del_window)) {
+                            create_btn.setBackColor(sf::Color(64, 156, 120));
+                            create_btn.setTextColor(sf::Color::White);
+                        }
+                        else {
+                            create_btn.setBackColor(sf::Color::White);
+                            create_btn.setTextColor(sf::Color::Black);
+                        }
+                    }
+
+                    if (cr_del_event.type == sf::Event::MouseMoved) {
+                        if (delete_btn.isMouseOver(cr_del_window)) {
+                            delete_btn.setBackColor(sf::Color(64, 156, 120));
+                            delete_btn.setTextColor(sf::Color::White);
+                        }
+                        else {
+                            delete_btn.setBackColor(sf::Color::White);
+                            delete_btn.setTextColor(sf::Color::Black);
+                        }
+                    }
+
+                    if (cr_del_event.type == sf::Event::MouseButtonPressed) {
+                        if (user_tbox.isMouseOver(cr_del_window)) {
+                            user_tbox.setSelected(true);
+                        }
+                        else {
+                            user_tbox.setSelected(false);
+                        }
+
+                        if (create_btn.isMouseOver(cr_del_window)) {
+                            std::cout << user_tbox.getText() << " Created" << std::endl;
+                            cr_del_window.close();
+                        }
+                        if (delete_btn.isMouseOver(cr_del_window)) {
+                            std::cout << user_tbox.getText() << " Deleted" << std::endl;
+                            cr_del_window.close();
+                        }
                     }
                 }
-                create_users_window.clear(sf::Color(230, 230, 230));
-                create_users_window.display();
+                cr_del_window.clear();
+                cr_del_window.draw(cr_del_bckrnd);
+                user_txt.drawTo(cr_del_window);
+                user_tbox.drawTo(cr_del_window);
+                create_btn.drawTo(cr_del_window);
+                delete_btn.drawTo(cr_del_window);
+                cr_del_window.display();
             }
         }
 
-        if (mainWindow->create_proj_btn.isMouseOver(window) && (req.user_role == "admin")) {
-            sf::RenderWindow create_proj_window(sf::VideoMode(400, 400), "Create and Assign a Project", sf::Style::Titlebar | sf::Style::Close);
-            while (create_proj_window.isOpen()) {
-                sf::Event event;
-                while (create_proj_window.pollEvent(event)) {
-                    if (event.type == sf::Event::Closed) {
-                        create_proj_window.close();
+        //opens the create project window
+        if (mainWindow->create_proj_btn.isMouseOver(window) && req.user_role == "admin") {
+            sf::RectangleShape cr_proj_bckrnd;
+            cr_proj_bckrnd.setSize({600, 400});
+            cr_proj_bckrnd.setFillColor(sf::Color(230, 230, 230)); // GREY
+
+            Button title_txt = Button("Title:", 15, sf::Color(64, 156, 120));
+            title_txt.setPosition({30, 30});
+            title_txt.setFont(mainWindow->f);
+
+            Textbox title_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            title_tbox.setFont(mainWindow->f);
+            title_tbox.setPosition({150, 30});
+
+            Button manager_txt = Button("Manager:", 15, sf::Color(64, 156, 120));
+            manager_txt.setPosition({30, 100});
+            manager_txt.setFont(mainWindow->f);
+
+            Textbox manager_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            manager_tbox.setFont(mainWindow->f);
+            manager_tbox.setPosition({150, 100});
+
+            Button client_txt = Button("Client:", 15, sf::Color(64, 156, 120));
+            client_txt.setPosition({30, 170});
+            client_txt.setFont(mainWindow->f);
+
+            Textbox client_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            client_tbox.setFont(mainWindow->f);
+            client_tbox.setPosition({150, 170});
+
+
+            Button create_btn = Button("Create", {100, 50}, 15, sf::Color::White, sf::Color::Black);
+            create_btn.setPosition({100, 250});
+            create_btn.setFont(mainWindow->f);
+
+            sf::RenderWindow cr_proj_window(sf::VideoMode(600, 400), "Create Project", sf::Style::Titlebar | sf::Style::Close);
+
+            while (cr_proj_window.isOpen()) {
+                sf::Event cr_proj_event;
+
+                // Key Presses and Info
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    title_tbox.setSelected(false);
+                    manager_tbox.setSelected(false);
+                    client_tbox.setSelected(false);
+                }
+
+                while (cr_proj_window.pollEvent(cr_proj_event)) {
+                    if (cr_proj_event.type == sf::Event::Closed) {
+                        cr_proj_window.close();
+                    }
+
+                    if (cr_proj_event.type == sf::Event::TextEntered) {
+                        if (title_tbox.isSelected()) {
+                            title_tbox.typeOn(cr_proj_event);
+                        }
+                        if (manager_tbox.isSelected()) {
+                            manager_tbox.typeOn(cr_proj_event);
+                        }
+                        if (client_tbox.isSelected()) {
+                            client_tbox.typeOn(cr_proj_event);
+                        }
+                    }
+
+                    if (cr_proj_event.type == sf::Event::MouseMoved) {
+                        if (create_btn.isMouseOver(cr_proj_window)) {
+                            create_btn.setBackColor(sf::Color(64, 156, 120));
+                            create_btn.setTextColor(sf::Color::White);
+                        }
+                        else {
+                            create_btn.setBackColor(sf::Color::White);
+                            create_btn.setTextColor(sf::Color::Black);
+                        }
+                    }
+
+                    if (cr_proj_event.type == sf::Event::MouseButtonPressed) {
+                        if (title_tbox.isMouseOver(cr_proj_window)) {
+                            title_tbox.setSelected(true);
+                        }
+                        else {
+                            title_tbox.setSelected(false);
+                        }
+
+                        if (manager_tbox.isMouseOver(cr_proj_window)) {
+                            manager_tbox.setSelected(true);
+                        }
+                        else {
+                            manager_tbox.setSelected(false);
+                        }
+
+                        if (client_tbox.isMouseOver(cr_proj_window)) {
+                            client_tbox.setSelected(true);
+                        }
+                        else {
+                            client_tbox.setSelected(false);
+                        }
+
+                        if (create_btn.isMouseOver(cr_proj_window)) {
+                            std::cout << title_tbox.getText() << " Created\nManager: " << manager_tbox.getText() << "\n" << "Client: " << client_tbox.getText() << std::endl;
+                            cr_proj_window.close();
+                        }
                     }
                 }
-                create_proj_window.clear(sf::Color(230, 230, 230));
-                create_proj_window.display();
+                cr_proj_window.clear();
+                cr_proj_window.draw(cr_proj_bckrnd);
+                title_txt.drawTo(cr_proj_window);
+                title_tbox.drawTo(cr_proj_window);
+                manager_txt.drawTo(cr_proj_window);
+                manager_tbox.drawTo(cr_proj_window);
+                client_txt.drawTo(cr_proj_window);
+                client_tbox.drawTo(cr_proj_window);
+                create_btn.drawTo(cr_proj_window);
+                cr_proj_window.display();
             }
         }
 
@@ -245,25 +516,6 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                     std::cout << index << std::endl;
                     proj_sel = index;
                 }
-                
-
-                // // Find the position of the colon
-                // size_t colonPos = input.find(':');
-
-                // // Extract the substring before the colon (excluding leading and trailing spaces)
-                // std::string title = input.substr(0, colonPos);
-                // // Trim leading and trailing spaces
-                // title.erase(0, title.find_first_not_of(" "));
-                // title.erase(title.find_last_not_of(" ") + 1);
-
-                // // Extract the substring after the colon (excluding leading and trailing spaces)
-                // std::string description = input.substr(colonPos + 1);
-                // // Trim leading and trailing spaces
-                // description.erase(0, description.find_first_not_of(" "));
-                // description.erase(description.find_last_not_of(" ") + 1);
-
-                // std::cout << "Title: " + title + "\nDescription: " + description << std::endl;
-                
 
                 delete projectWindow;
                 projectWindow = new ProjectWindow(mainWindow->f, req, proj_sel);
