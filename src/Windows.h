@@ -41,7 +41,7 @@ void startWindows() {
 
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR);
-    MainWindow* mainWindow = new MainWindow(CNR);
+    MainWindow* mainWindow = new MainWindow(CNR, "Not Signed IN");
     TimesWindow* timesWindow = new TimesWindow(CNR);
     ProjectWindow* projectWindow = new ProjectWindow(CNR, "Test", "test");
     AchNotWindow* achNotWindow = new AchNotWindow(CNR);
@@ -71,9 +71,13 @@ void startWindows() {
                 window.close();
             }
             if (login_screen) {
-                LoginWindowEvents(window, loginWindow, login_screen, main_screen, e);
+                LoginWindowEvents(window, loginWindow, mainWindow, login_screen, main_screen, e);
             }
             if (main_screen) {
+                if (mainWindow->signed_in == "Not Signed IN") {
+                    delete mainWindow;
+                    mainWindow = new MainWindow(CNR, "Signed In");
+                }
                 MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e);
             }
             if (time_logs_screen) {
@@ -88,7 +92,6 @@ void startWindows() {
         }
 
         // displays for each screen
-        //FIXME might need to figure out a way to relieve the pointers and delete stuff
         if (login_screen) {
             if (loginWindow == nullptr) {
                 loginWindow = new LoginWindow(CNR);

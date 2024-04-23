@@ -3,10 +3,12 @@
 #include <SFML/Graphics.hpp>
 #include "Textbox.h"
 #include "Button.h"
+#include "MainWindow.h"
 
 
 class LoginWindow {
 public:
+    sf::Font f;
     Button title;
     Button username_txt;
     Button password_txt;
@@ -16,6 +18,7 @@ public:
 
     LoginWindow() { }
     LoginWindow(sf::Font& font) {
+        f = font;
         title = Button("QuestClock", 75, sf::Color(64, 156, 120));
         title.setPosition({250, 100});
         title.setFont(font);
@@ -30,9 +33,10 @@ public:
 
         username_tbox.setFont(font);
         username_tbox.setPosition({200, 300}); // FIXME: limits need fixing when it comes to deletion
-        password_tbox.setFont(font);
 
+        password_tbox.setFont(font);
         password_tbox.setPosition({200, 400});
+
         login_btn = Button("Login", {200, 50}, 30, sf::Color::White, sf::Color::Black);
         login_btn.setPosition({200, 500});
         login_btn.setFont(font);
@@ -49,7 +53,7 @@ public:
     }
 };
 
-void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, bool& login_screen, bool& main_screen, sf::Event& e) {
+void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainWindow* mainWindow, bool& login_screen, bool& main_screen, sf::Event& e) {
     if (e.type == sf::Event::TextEntered) {
         if (loginWindow->username_tbox.isSelected()) {
             loginWindow->username_tbox.typeOn(e);
@@ -89,6 +93,7 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, bool&
 
         if (loginWindow->login_btn.isMouseOver(window)) {
             std::cout << "Username: " << loginWindow->username_tbox.getText() << "\n" << "Password: " << loginWindow->password_tbox.getText() << std::endl;
+
             login_screen = false;
             main_screen = true;
         }

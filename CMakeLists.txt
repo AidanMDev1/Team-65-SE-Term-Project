@@ -14,7 +14,8 @@ set(SOURCE_FILES
         src/LoginWindow.h
         src/MainWindow.h
         src/TimesWindow.h
-        src/ProjectWindow.h)
+        src/ProjectWindow.h
+        src/AchNotWindow.h)
 
 add_executable(ProjectBase ${SOURCE_FILES})
 
