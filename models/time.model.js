@@ -23,3 +23,4 @@ const TimeSchema = mongoose.Schema(
 
 const Time = mongoose.model("Time", TimeSchema);
 module.exports = Time;
+
