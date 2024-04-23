@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "Button.h"
 #include "ProjectWindow.h"
@@ -8,6 +9,9 @@
 class MainWindow {
 public:
     sf::Font f;
+    bool signed_in;
+    int proj_sel;
+
     Button welcome_txt;
     Button sign_out_btn;
     Button projects_txt;
@@ -23,10 +27,10 @@ public:
     request req;
 
     MainWindow() { }
-    MainWindow(sf::Font& font, request req) {
+    MainWindow(sf::Font& font, request& req, bool s, int& proj_sel) {
         
         f = font;
-
+        signed_in = s;
         welcome_txt = Button("WELCOME! Unlock Time's Potential with QuestClock!", 25, sf::Color(64, 156, 120));
         welcome_txt.setPosition({30, 30});
         welcome_txt.setFont(font);
@@ -46,32 +50,12 @@ public:
         //this is where we show all projects that are selectable
 
         //THIS DOESNT WORK WE NEED TO FIGURE OUT HOW TO PASS THE USER INFO INTO THIS PAGE FROM LOGIN
-        // for (int i = 0; i < req.assigned_projects.size(); i++){
-        //     std::cout << req.assigned_projects[i] << std::endl;
-        //     Button test = Button(req.assigned_projects[i], {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        //     test.setPosition({50, 160 + 75*i});
-        //     test.setFont(font);
-        //     lo_proj.push_back(test);
-        // }
-        
-        for (int i = 0; i < 4; i++){
-            Button test = Button("Project" + to_string(i), {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-            test.setPosition({50, int(160 + (75 * i))});
+        for (int i = 0; i < req.assigned_projects.size(); i++){
+            Button test = Button(req.assigned_projects[i], {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+            test.setPosition({50, 160 + 75*i});
             test.setFont(font);
             lo_proj.push_back(test);
-        };
-
-        // OLD TEST PROJECT LIST
-        // Button test1 = Button("TEST1 : First test of them all.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        // test1.setPosition({50, 160});
-        // test1.setFont(font);
-
-        // Button test2 = Button("TEST2 : 2nd test for all 'em.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        // test2.setPosition({50, 160 + 75});
-        // test2.setFont(font);
-
-        // lo_proj.push_back(test1);
-        // lo_proj.push_back(test2);
+        }
 
         pgdown_img.loadFromFile("files/page_down.png");
 
@@ -131,7 +115,8 @@ public:
     }
 };
 
-void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& time_logs_screen, bool& project_screen, bool& ach_not_screen, sf::Event& e, request req) {
+void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen, 
+                        bool& main_screen, bool& time_logs_screen, bool& project_screen, bool& ach_not_screen, sf::Event& e, request& req, int& proj_sel) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
         if (mainWindow->sign_out_btn.isMouseOver(window)) {
@@ -206,7 +191,7 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             }
         }
 
-        if (mainWindow->create_users_btn.isMouseOver(window)) {
+        if (mainWindow->create_users_btn.isMouseOver(window) && (req.user_role == "admin")) {
             sf::RenderWindow create_users_window(sf::VideoMode(400, 400), "Create a User", sf::Style::Titlebar | sf::Style::Close);
             while (create_users_window.isOpen()) {
                 sf::Event event;
@@ -220,7 +205,7 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             }
         }
 
-        if (mainWindow->create_proj_btn.isMouseOver(window)) {
+        if (mainWindow->create_proj_btn.isMouseOver(window) && (req.user_role == "admin")) {
             sf::RenderWindow create_proj_window(sf::VideoMode(400, 400), "Create and Assign a Project", sf::Style::Titlebar | sf::Style::Close);
             while (create_proj_window.isOpen()) {
                 sf::Event event;
@@ -233,7 +218,6 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                 create_proj_window.display();
             }
         }
-
 
         if (mainWindow->access_logs_btn.isMouseOver(window)) {
             std::cout << "-> Timelog Screen" << std::endl;
@@ -253,28 +237,36 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
         for (auto& proj : mainWindow->lo_proj) {
             if (proj.isMouseOver(window)) {
 
-                // split description and title
+                // // split description and title
                 std::string input = proj.getText();
+                auto it = find(req.assigned_projects.begin(), req.assigned_projects.end(), input);
+                if (it != req.assigned_projects.end()){
+                    int index = it - req.assigned_projects.begin();
+                    std::cout << index << std::endl;
+                    proj_sel = index;
+                }
+                
 
-                // Find the position of the colon
-                size_t colonPos = input.find(':');
+                // // Find the position of the colon
+                // size_t colonPos = input.find(':');
 
-                // Extract the substring before the colon (excluding leading and trailing spaces)
-                std::string title = input.substr(0, colonPos);
-                // Trim leading and trailing spaces
-                title.erase(0, title.find_first_not_of(" "));
-                title.erase(title.find_last_not_of(" ") + 1);
+                // // Extract the substring before the colon (excluding leading and trailing spaces)
+                // std::string title = input.substr(0, colonPos);
+                // // Trim leading and trailing spaces
+                // title.erase(0, title.find_first_not_of(" "));
+                // title.erase(title.find_last_not_of(" ") + 1);
 
-                // Extract the substring after the colon (excluding leading and trailing spaces)
-                std::string description = input.substr(colonPos + 1);
-                // Trim leading and trailing spaces
-                description.erase(0, description.find_first_not_of(" "));
-                description.erase(description.find_last_not_of(" ") + 1);
+                // // Extract the substring after the colon (excluding leading and trailing spaces)
+                // std::string description = input.substr(colonPos + 1);
+                // // Trim leading and trailing spaces
+                // description.erase(0, description.find_first_not_of(" "));
+                // description.erase(description.find_last_not_of(" ") + 1);
 
-                std::cout << "Title: " + title + "\nDescription: " + description << std::endl;
+                // std::cout << "Title: " + title + "\nDescription: " + description << std::endl;
+                
 
                 delete projectWindow;
-                projectWindow = new ProjectWindow(mainWindow->f, req);
+                projectWindow = new ProjectWindow(mainWindow->f, req, proj_sel);
 
                 project_screen = true;
                 main_screen = false;

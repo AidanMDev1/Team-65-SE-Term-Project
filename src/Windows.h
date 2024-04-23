@@ -1,5 +1,6 @@
 # pragma once
 #include <iostream>
+#include <vector>
 #include "UserAccount.h"
 #include <SFML/Graphics.hpp>
 #include "Textbox.h"
@@ -18,7 +19,9 @@
 
 void startWindows() {
     request req;
+    int proj_sel = -1;
     // WINDOW booleans
+    bool signed_in = false;
     bool login_screen = true;
     bool main_screen = false;
     bool time_logs_screen = false;
@@ -43,10 +46,10 @@ void startWindows() {
 
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR, req);
-    MainWindow* mainWindow = new MainWindow(CNR, req);
+    MainWindow* mainWindow = new MainWindow(CNR, req, signed_in, proj_sel);
     TimesWindow* timesWindow = new TimesWindow(CNR, req);
-    ProjectWindow* projectWindow = new ProjectWindow(CNR, req);
-    AchNotWindow* achNotWindow = new AchNotWindow(CNR);
+    ProjectWindow* projectWindow = new ProjectWindow(CNR, req, proj_sel);
+    AchNotWindow* achNotWindow = new AchNotWindow(CNR, req);
 
     // Window loop
     while (window.isOpen()) {
@@ -76,16 +79,22 @@ void startWindows() {
                 LoginWindowEvents(window, loginWindow, mainWindow, login_screen, main_screen, e, req);
             }
             if (main_screen) {
-                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req);
+                if (!signed_in) //update main screen
+                {
+                    delete mainWindow;
+                    signed_in = true;
+                    mainWindow = new MainWindow(CNR, req, signed_in, proj_sel);
+                }
+                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req, proj_sel);
             }
             if (time_logs_screen) {
                 TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e, req);
             }
             if (project_screen) {
-                ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e, req);
+                ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e, req, proj_sel);
             }
             if (ach_not_screen) {
-                AchNotWindowEvents(window, achNotWindow, login_screen, main_screen, ach_not_screen, e);
+                AchNotWindowEvents(window, achNotWindow, login_screen, main_screen, ach_not_screen, e, req);
             }
         }
 
@@ -94,6 +103,7 @@ void startWindows() {
         if (login_screen) {
             if (loginWindow == nullptr) {
                 loginWindow = new LoginWindow(CNR, req);
+                signed_in = false;
             }
             window.clear();
             window.draw(background);

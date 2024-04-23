@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "Textbox.h"
 #include "Button.h"
@@ -18,7 +19,7 @@ public:
     Button login_btn;
 
     LoginWindow() { }
-    LoginWindow(sf::Font& font, request req) {
+    LoginWindow(sf::Font& font, request& req) {
         f = font;
         title = Button("QuestClock", 75, sf::Color(64, 156, 120));
         title.setPosition({250, 100});
@@ -49,7 +50,8 @@ public:
     }
 };
 
-void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainWindow* mainWindow, bool& login_screen, bool& main_screen, sf::Event& e, request req) {
+//MainWindow*
+void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainWindow* mainWindow, bool& login_screen, bool& main_screen, sf::Event& e, request& req) {
     if (e.type == sf::Event::TextEntered) {
         if (loginWindow->username_tbox.isSelected()) {
             loginWindow->username_tbox.typeOn(e);
@@ -92,26 +94,29 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainW
             bool check = false;
             string username = loginWindow->username_tbox.getText();
             string password = loginWindow->password_tbox.getText();
-            check = req.login(username, password);
-        
-            if (check && !username.empty() &&  !password.empty()){
-                std::cout << "login successful" << std::endl;   
-                
-                // delete mainWindow;
-                // mainWindow = new MainWindow(loginWindow->f, req);
-                
-                std::cout << req.username << std::endl;
-                std::cout << req.password << std::endl;
-                std::cout << req.user_role << std::endl;
 
-                main_screen = true;
-                login_screen = false;
-                
+            if (!username.empty() && !password.empty()){
+                check = req.login(username, password);
+                if (check){
+                    
+                    std::cout << "login successful" << std::endl;   
+                    std::cout << req.username << std::endl;
+                    std::cout << req.password << std::endl;
+                    std::cout << req.user_role << std::endl;
+
+                    main_screen = true;
+                    login_screen = false;
+                }
+                else{
+                    std::cout << "login unsuccessful" << std::endl;
+                    login_screen = true;
+                    main_screen = false;
+                }
             }
             else{
                 std::cout << "login unsuccessful" << std::endl;
-                login_screen = true;
-                main_screen = false;
+                    login_screen = true;
+                    main_screen = false;
             }
         }
     }

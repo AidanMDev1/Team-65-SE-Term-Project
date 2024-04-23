@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Button.h"
+#include "request.h"
 
 class AchNotWindow {
 public:
@@ -21,7 +22,7 @@ public:
     std::vector<Button> lo_achs;
 
     AchNotWindow() { }
-    AchNotWindow(sf::Font& font) {
+    AchNotWindow(sf::Font& font, request& req) {
         sign_out_btn = Button("Sign out", {90, 40}, 12, sf::Color::White, sf::Color::Black);
         sign_out_btn.setPosition({780, 30});
         sign_out_btn.setFont(font);
@@ -137,7 +138,7 @@ public:
     }
 };
 
-void AchNotWindowEvents(sf::RenderWindow& window, AchNotWindow* achNotWindow, bool& login_screen, bool& main_screen, bool& ach_not_screen, sf::Event& e) {
+void AchNotWindowEvents(sf::RenderWindow& window, AchNotWindow* achNotWindow, bool& login_screen, bool& main_screen, bool& ach_not_screen, sf::Event& e, request& req) {
     if (e.type == sf::Event::MouseMoved) {
         if (achNotWindow->sign_out_btn.isMouseOver(window)) {
             achNotWindow->sign_out_btn.setBackColor(sf::Color(64, 156, 120));

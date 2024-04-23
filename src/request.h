@@ -15,7 +15,8 @@ public:
     string username;
     string password;
     string user_role;
-    std::vector<std::string> assigned_projects;
+    vector<string> assigned_projects;
+
     string get_allusers();
     bool login(string user, string pass);
     bool create_user(string user, string pass, string role, string project);
@@ -23,6 +24,11 @@ public:
     bool send_notification(string user, string notif);
     bool check_notification(string user);
     bool delete_notification(string user, string notif);
+    bool check_time(string user, string project);
+    bool create_clockin(string user, string project);
     bool clockin(string user, string project);
     bool clockout(string user, string project);
+    bool create_project(string project, string project_manager, string client);
+    bool get_manager_projects(string project_manager);
+
 };

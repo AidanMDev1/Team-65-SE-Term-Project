@@ -1,11 +1,14 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "Button.h"
 #include "request.h"
 
 class ProjectWindow {
 public:
+    int proj_sel;
+
     sf::Texture back_img;
     sf::Sprite back_btn;
     Button sign_out_btn;
@@ -20,9 +23,13 @@ public:
     std::string proj_desc = "This is a test project.\nAssigned:\nAidan\nBrian\nAbigail\nAkeeb";
 
     ProjectWindow() { }
-    ProjectWindow(sf::Font& font, request req) {
-        // proj_title = title;
-        // proj_desc = description;
+    ProjectWindow(sf::Font& font, request& req, int& proj_sel) {
+        //only shuld work if the proj_sel is updated (when a project is selected)
+        if (proj_sel != -1){
+            proj_title = req.assigned_projects[proj_sel];
+            // proj_desc = req.password;
+        }
+        
 
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
         back_btn.setTexture(back_img);
@@ -88,7 +95,7 @@ public:
     }
 };
 
-void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& project_screen, sf::Event& e, request req) {
+void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow, bool& login_screen, bool& main_screen, bool& project_screen, sf::Event& e, request& req, int& proj_sel) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
         if (projectWindow->sign_out_btn.isMouseOver(window)) {
@@ -128,18 +135,44 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
     if (e.type == sf::Event::MouseButtonPressed) {
         if (projectWindow->sign_out_btn.isMouseOver(window)) {
             std::cout << "-> Login Screen" << std::endl;
+            req.clockout(req.username, req.assigned_projects[proj_sel]);
             login_screen = true;
             project_screen = false;
         }
         if (projectWindow->clockio_btn.isMouseOver(window)) {
             if (projectWindow->clockio_btn.getText() == "CLOCK-IN") {
-                projectWindow->clockio_btn.setText("CLOCK-OUT");
+
+                bool check = false;
+                bool check2 = false;
+                check = req.check_time(req.username, req.assigned_projects[proj_sel]); //checks if time table exits in db
+
+                if (check){    //if it exists append into array
+                    bool check2 = false;
+                    check2 = req.clockin(req.username, req.assigned_projects[proj_sel]);
+                    if (check2){
+                        projectWindow->clockio_btn.setText("CLOCK-OUT");
+                    }
+
+                }else{     //if it doesnt exist create it
+                    bool check2 = false;
+                    check2 = req.create_clockin(req.username, req.assigned_projects[proj_sel]);
+                    if (check2){
+                        projectWindow->clockio_btn.setText("CLOCK-OUT");
+                    }
+                }
+                
             }
-            else {
-                projectWindow->clockio_btn.setText("CLOCK-IN");
+            else if (projectWindow->clockio_btn.getText() == "CLOCK-OUT") {
+
+                bool check = false;
+                check = req.clockout(req.username, req.assigned_projects[proj_sel]);
+                if (check){
+                    std::cout << "clocking out" << std::endl;
+                    projectWindow->clockio_btn.setText("CLOCK-IN");
+                }
             }
         }
-        if (projectWindow->assign_user_btn.isMouseOver(window)) {
+        if (projectWindow->assign_user_btn.isMouseOver(window) && (req.user_role == "admin")) {
             std::cout << "-> Assign User Pop-up" << std::endl;
             sf::RenderWindow assign_user_window(sf::VideoMode(400, 400), "Assign Users", sf::Style::Titlebar | sf::Style::Close);
             while (assign_user_window.isOpen()) {
@@ -153,7 +186,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                 assign_user_window.display();
             }
         }
-        if (projectWindow->edit_btn.isMouseOver(window)) {
+        if (projectWindow->edit_btn.isMouseOver(window) && (req.user_role == "admin")) {
             std::cout << "-> Edit Project Pop-up" << std::endl;
             sf::RenderWindow edit_proj_window(sf::VideoMode(400, 400), "Edit Project", sf::Style::Titlebar | sf::Style::Close);
             while (edit_proj_window.isOpen()) {
@@ -169,6 +202,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
         }
         if (projectWindow->isMouseOverBack(window)) {
             std::cout << "-> Main Screen" << std::endl;
+            req.clockout(req.username, req.assigned_projects[proj_sel]);
             main_screen = true;
             project_screen = false;
         }
