@@ -13,8 +13,9 @@ set(SOURCE_FILES
         src/LoginWindow.h
         src/MainWindow.h
         src/TimesWindow.h
-        request.h
-        request.cpp)
+        src/AchNotWindow.h
+        src/request.h
+        src/request.cpp)
 
 set(SFML_DIR C:SFML/lib/cmake/SFML)
 
