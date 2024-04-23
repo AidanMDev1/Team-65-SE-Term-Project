@@ -266,6 +266,16 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
 
                         if (send_btn.isMouseOver(contact_window)) {
                             std::cout << "To: " << to_tbox.getText() << "\n" << "Message: " << msg_tbox.getText() << std::endl;
+                            std::string username = to_tbox.getText();
+                            std::string notif = msg_tbox.getText();
+
+                            bool check = false;
+                            bool check2 = false;
+                            check = req.check_user(username); //checks if user exists in db
+                            if(check){
+                                check2 = req.send_notification(username, req.username, notif);
+                            }
+
                             contact_window.close();
                         }
                     }
@@ -356,10 +366,18 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
 
                         if (create_btn.isMouseOver(cr_del_window)) {
                             std::cout << user_tbox.getText() << " Created" << std::endl;
+                            // string username = user_tbox.getText();
+                            // bool check  = false;
+                            // check = req.create_user(username, password, role, proj);
                             cr_del_window.close();
                         }
                         if (delete_btn.isMouseOver(cr_del_window)) {
                             std::cout << user_tbox.getText() << " Deleted" << std::endl;
+
+                            string username = user_tbox.getText();
+                            bool check = false;
+                            check = req.delete_user(username);
+
                             cr_del_window.close();
                         }
                     }
@@ -473,6 +491,17 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
 
                         if (create_btn.isMouseOver(cr_proj_window)) {
                             std::cout << title_tbox.getText() << " Created\nManager: " << manager_tbox.getText() << "\n" << "Client: " << client_tbox.getText() << std::endl;
+                            std::string proj_name = title_tbox.getText();
+                            std::string proj_mana = manager_tbox.getText();
+                            std::string proj_client = client_tbox.getText();
+
+                            bool check = false;
+                            bool check2 = false;
+                            check = req.check_user(proj_mana);
+                            if (check){
+                                check2 = req.create_project(proj_name, proj_mana, proj_client);
+                            }
+                            
                             cr_proj_window.close();
                         }
                     }

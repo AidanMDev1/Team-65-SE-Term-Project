@@ -144,10 +144,13 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
         }
     }
 
+    bool clockedin = false;
     if (e.type == sf::Event::MouseButtonPressed) {
         if (projectWindow->sign_out_btn.isMouseOver(window)) {
             std::cout << "-> Login Screen" << std::endl;
-            req.clockout(req.username, req.assigned_projects[proj_sel]);
+            if (clockedin){
+                req.clockout(req.username, req.assigned_projects[proj_sel]);
+            }
             login_screen = true;
             project_screen = false;
         }
@@ -163,6 +166,11 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                     check2 = req.clockin(req.username, req.assigned_projects[proj_sel]);
                     if (check2){
                         projectWindow->clockio_btn.setText("CLOCK-OUT");
+                        clockedin = true;
+                        
+                        //clock in chronos handling
+                        projectWindow->begin_time = std::chrono::high_resolution_clock::now();
+                        projectWindow->time_txt.setText("Time - 00:00:00"); 
                     }
 
                 }else{     //if it doesnt exist create it
@@ -170,6 +178,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                     check2 = req.create_clockin(req.username, req.assigned_projects[proj_sel]);
                     if (check2){
                         projectWindow->clockio_btn.setText("CLOCK-OUT");
+                        clockedin = true;
 
                         //clock in chronos handling
                         projectWindow->begin_time = std::chrono::high_resolution_clock::now();
@@ -185,6 +194,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                 if (check){
                     std::cout << "clocking out" << std::endl;
                     projectWindow->clockio_btn.setText("CLOCK-IN");
+                    clockedin = false;
 
                     //clock out chronos handling
                     auto end_time = std::chrono::high_resolution_clock::now();
@@ -295,6 +305,18 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
 
                         if (assign_btn.isMouseOver(a_user_window)) {
                             std::cout << user_tbox.getText() << " Assigned" << std::endl;
+
+                            std::string username = user_tbox.getText();
+                            bool check = false;
+                            bool check2 = false;
+
+                            check = req.check_user(username); //check if user exists
+                            check2 = req.check_project(req.assigned_projects[proj_sel]); //check if project exists
+
+                            if (check && check2){
+                                bool check3 = false;
+                                check3 = req.assign_user(username, req.assigned_projects[proj_sel]); //assign if both true
+                            }
                             a_user_window.close();
                         }
                     }
@@ -307,6 +329,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                 a_user_window.display();
             }
         }
+
         if (projectWindow->edit_btn.isMouseOver(window) && req.user_role == "admin") {
             sf::RectangleShape edit_proj_bckrnd;
             edit_proj_bckrnd.setSize({600, 400});
@@ -406,6 +429,17 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                         if (create_btn.isMouseOver(edit_proj_window)) {
                             projectWindow->proj_t_txt.setText( title_tbox.getText());
                             std::cout << title_tbox.getText() << " - is the New Title\nManager: " << manager_tbox.getText() << "\n" << "Client: " << client_tbox.getText() << std::endl;
+                            std::string proj_title = title_tbox.getText();
+                            std::string proj_mana = title_tbox.getText();
+                            std::string proj_clie = client_tbox.getText();
+
+                            bool check = false;
+                            bool check2 = false;
+                            check = req.check_user(proj_mana);
+                            if (check){
+                                check2 = req.edit_project(proj_title, proj_mana, proj_clie);
+                            }
+
                             edit_proj_window.close();
                         }
                     }
@@ -424,7 +458,9 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
         }
         if (projectWindow->isMouseOverBack(window)) {
             std::cout << "-> Main Screen" << std::endl;
-            req.clockout(req.username, req.assigned_projects[proj_sel]);
+            if(clockedin){
+                req.clockout(req.username, req.assigned_projects[proj_sel]);
+            }
             main_screen = true;
             project_screen = false;
         }

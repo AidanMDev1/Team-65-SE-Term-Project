@@ -166,6 +166,64 @@ bool request::create_user(string user, string pass, string role, string project)
         curl_easy_cleanup(curl);
     }
     return true;
+}
+bool request::check_user(string user)
+{
+    string param = "api/check_user/" + user;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            if (response_data == "null")
+            {
+                return false;
+            }
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+}
+bool request::assign_user(string user, string proj)
+{
+    string param = "api/assign_user/" + user + "/" + proj;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            if (response_data == "null")
+            {
+                return false;
+            }
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
 };
 
 bool request::delete_user(string user)
@@ -198,9 +256,9 @@ bool request::delete_user(string user)
     return true;
 };
 
-bool request::send_notification(string user, string notif)
+bool request::send_notification(string user, string from, string notif)
 {
-    string param = "api/send_notification/" + user + "/" + notif;
+    string param = "api/send_notification/" + user + "/" + from + "/" + notif;
     string req = url + param;
     string response_data;
 
@@ -435,9 +493,67 @@ bool request::create_project(string project, string project_manager, string clie
     }
     return true;
 }
+bool request::check_project(string project)
+{
+    string param = "api/check_project/" + project;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            if (response_data == "null")
+            {
+                return false;
+            }
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+}
+bool request::edit_project(string project, string project_manager, string client)
+{
+    string param = "api/edit_project/" + project + "/" + project_manager + "/" + client;
+    string req = url + param;
+    string response_data;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            return false;
+        } else {
+            if (response_data == "null")
+            {
+                return false;
+            }
+            cout << "Response: " << response_data << endl;
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    return true;
+}
 bool request::get_manager_projects(string project_manager)
 {
-        string param = "api/manager_projects/" + project_manager;
+    string param = "api/manager_projects/" + project_manager;
     string req = url + param;
     string response_data;
 

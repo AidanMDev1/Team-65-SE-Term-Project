@@ -20,8 +20,10 @@ public:
     string get_allusers();
     bool login(string user, string pass);
     bool create_user(string user, string pass, string role, string project);
+    bool check_user(string user);
+    bool assign_user(string user, string proj);
     bool delete_user(string user);
-    bool send_notification(string user, string notif);
+    bool send_notification(string user, string from, string notif);
     bool check_notification(string user);
     bool delete_notification(string user, string notif);
     bool check_time(string user, string project);
@@ -29,6 +31,8 @@ public:
     bool clockin(string user, string project);
     bool clockout(string user, string project);
     bool create_project(string project, string project_manager, string client);
+    bool check_project(string project);
+    bool edit_project(string project, string project_manager, string client);
     bool get_manager_projects(string project_manager);
 
 };
