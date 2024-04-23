@@ -14,6 +14,8 @@ public:
     sf::RectangleShape proj_bckgrnd;
     sf::Texture pgdown_img;
     sf::Sprite proj_pgdown_btn;
+    sf::Texture pgup_img;
+    sf::Sprite proj_pgup_btn;
     Button contact_btn;
     Button create_proj_btn;
     Button create_users_btn;
@@ -44,17 +46,22 @@ public:
 
         //this is where we show all projects that are selectable
         Button test1 = Button("TEST1 pls wrk", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        test1.setPosition({50, 160});
+        test1.setPosition({50, 220});
         test1.setFont(font);
 
         Button test2 = Button("TEST2 pls wrk", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-        test2.setPosition({50, 160 + 75});
+        test2.setPosition({50, 220 + 75});
         test2.setFont(font);
 
         lo_proj.push_back(test1);
         lo_proj.push_back(test2);
 
         pgdown_img.loadFromFile("files/page_down.png");
+        pgup_img.loadFromFile("files/page_up.png");
+
+        proj_pgup_btn.setTexture(pgup_img);
+        proj_pgup_btn.setScale({0.1, 0.1});
+        proj_pgup_btn.setPosition({370, 150});
 
         proj_pgdown_btn.setTexture(pgdown_img);
         proj_pgdown_btn.setScale({0.1, 0.1});
@@ -85,6 +92,7 @@ public:
     void drawTo(sf::RenderWindow& window) {
         window.draw(proj_bckgrnd);
         window.draw(proj_pgdown_btn);
+        window.draw(proj_pgup_btn);
         welcome_txt.drawTo(window);
         sign_out_btn.drawTo(window);
         projects_txt.drawTo(window);
@@ -105,6 +113,19 @@ public:
         float btn_pos_y = proj_pgdown_btn.getPosition().y;
         float btn_xpos_width = proj_pgdown_btn.getPosition().x + proj_pgdown_btn.getLocalBounds().width * 0.1;
         float btn_xpos_height = proj_pgdown_btn.getPosition().y + proj_pgdown_btn.getLocalBounds().height * 0.1;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
+    bool isMouseOverProjPU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = proj_pgup_btn.getPosition().x;
+        float btn_pos_y = proj_pgup_btn.getPosition().y;
+        float btn_xpos_width = proj_pgup_btn.getPosition().x + proj_pgup_btn.getLocalBounds().width * 0.1;
+        float btn_xpos_height = proj_pgup_btn.getPosition().y + proj_pgup_btn.getLocalBounds().height * 0.1;
         if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
             return true;
         }
@@ -292,12 +313,28 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             user_tbox.setFont(mainWindow->f);
             user_tbox.setPosition({150, 30});
 
+            Button password_txt = Button("Password:", 15, sf::Color(64, 156, 120));
+            password_txt.setPosition({30, 100});
+            password_txt.setFont(mainWindow->f);
+
+            Textbox password_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            password_tbox.setFont(mainWindow->f);
+            password_tbox.setPosition({150, 100});
+
+            Button project_txt = Button("Project:", 15, sf::Color(64, 156, 120));
+            project_txt.setPosition({30, 170});
+            project_txt.setFont(mainWindow->f);
+
+            Textbox project_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            project_tbox.setFont(mainWindow->f);
+            project_tbox.setPosition({150, 170});
+
             Button create_btn = Button("Create", {100, 50}, 15, sf::Color::White, sf::Color::Black);
-            create_btn.setPosition({100, 200});
+            create_btn.setPosition({100, 250});
             create_btn.setFont(mainWindow->f);
 
             Button delete_btn = Button("Delete", {100, 50}, 15, sf::Color::White, sf::Color::Black);
-            delete_btn.setPosition({300, 200});
+            delete_btn.setPosition({300, 250});
             delete_btn.setFont(mainWindow->f);
 
             sf::RenderWindow cr_del_window(sf::VideoMode(600, 400), "Create or Delete User", sf::Style::Titlebar | sf::Style::Close);
@@ -318,6 +355,12 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                     if (cr_del_event.type == sf::Event::TextEntered) {
                         if (user_tbox.isSelected()) {
                             user_tbox.typeOn(cr_del_event);
+                        }
+                        if (password_tbox.isSelected()) {
+                            password_tbox.typeOn(cr_del_event);
+                        }
+                        if (project_tbox.isSelected()) {
+                            project_tbox.typeOn(cr_del_event);
                         }
                     }
 
@@ -350,6 +393,18 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                         else {
                             user_tbox.setSelected(false);
                         }
+                        if (password_tbox.isMouseOver(cr_del_window)) {
+                            password_tbox.setSelected(true);
+                        }
+                        else {
+                            password_tbox.setSelected(false);
+                        }
+                        if (project_tbox.isMouseOver(cr_del_window)) {
+                            project_tbox.setSelected(true);
+                        }
+                        else {
+                            project_tbox.setSelected(false);
+                        }
 
                         if (create_btn.isMouseOver(cr_del_window)) {
                             std::cout << user_tbox.getText() << " Created" << std::endl;
@@ -365,6 +420,10 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                 cr_del_window.draw(cr_del_bckrnd);
                 user_txt.drawTo(cr_del_window);
                 user_tbox.drawTo(cr_del_window);
+                password_txt.drawTo(cr_del_window);
+                password_tbox.drawTo(cr_del_window);
+                project_txt.drawTo(cr_del_window);
+                project_tbox.drawTo(cr_del_window);
                 create_btn.drawTo(cr_del_window);
                 delete_btn.drawTo(cr_del_window);
                 cr_del_window.display();
@@ -501,6 +560,9 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
 
         if (mainWindow->isMouseOverProjPD(window)) {
             std::cout << "Projects page down" << std::endl;
+        }
+        if (mainWindow->isMouseOverProjPU(window)) {
+            std::cout << "Projects page up" << std::endl;
         }
         for (auto& proj : mainWindow->lo_proj) {
             if (proj.isMouseOver(window)) {
