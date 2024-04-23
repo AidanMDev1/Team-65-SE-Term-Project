@@ -43,7 +43,7 @@ void startWindows() {
     LoginWindow* loginWindow = new LoginWindow(CNR);
     MainWindow* mainWindow = new MainWindow(CNR, "Not Signed IN");
     TimesWindow* timesWindow = new TimesWindow(CNR);
-    ProjectWindow* projectWindow = new ProjectWindow(CNR, "Test", "test");
+    ProjectWindow* projectWindow = new ProjectWindow(CNR, "Test", "test", "test");
     AchNotWindow* achNotWindow = new AchNotWindow(CNR);
 
     // Window loop

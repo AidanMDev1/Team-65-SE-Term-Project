@@ -43,11 +43,11 @@ public:
         proj_bckgrnd.setFillColor(sf::Color(146, 176, 164));
 
         //this is where we show all projects that are selectable
-        Button test1 = Button("TEST1 : First test of them all.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+        Button test1 = Button("TEST1 pls wrk", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
         test1.setPosition({50, 160});
         test1.setFont(font);
 
-        Button test2 = Button("TEST2 : 2nd test for all 'em.", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
+        Button test2 = Button("TEST2 pls wrk", {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
         test2.setPosition({50, 160 + 75});
         test2.setFont(font);
 
@@ -504,29 +504,8 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
         }
         for (auto& proj : mainWindow->lo_proj) {
             if (proj.isMouseOver(window)) {
-
-                // split description and title
-                std::string input = proj.getText();
-
-                // Find the position of the colon
-                size_t colonPos = input.find(':');
-
-                // Extract the substring before the colon (excluding leading and trailing spaces)
-                std::string title = input.substr(0, colonPos);
-                // Trim leading and trailing spaces
-                title.erase(0, title.find_first_not_of(" "));
-                title.erase(title.find_last_not_of(" ") + 1);
-
-                // Extract the substring after the colon (excluding leading and trailing spaces)
-                std::string description = input.substr(colonPos + 1);
-                // Trim leading and trailing spaces
-                description.erase(0, description.find_first_not_of(" "));
-                description.erase(description.find_last_not_of(" ") + 1);
-
-                std::cout << "Title: " + title + "\nDescription: " + description << std::endl;
-
                 delete projectWindow;
-                projectWindow = new ProjectWindow(mainWindow->f, title, description);
+                projectWindow = new ProjectWindow(mainWindow->f, proj.getText(), "the code from backend", "the code from backend");
 
                 project_screen = true;
                 main_screen = false;

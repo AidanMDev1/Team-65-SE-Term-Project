@@ -13,24 +13,27 @@ public:
     Button sign_out_btn;
     Button proj_plain_txt;
     Button proj_t_txt;
-    Button proj_d_txt;
+    Button proj_m_txt;
+    Button proj_c_txt;
     sf::RectangleShape proj_bckgrnd;
     Button clockio_btn;
     Button time_txt;
     Button assign_user_btn;
     Button edit_btn;
     std::string proj_title = "TEST123";
-    std::string proj_desc = "This is a test project.\nAssigned:\nAidan\nBrian\nAbigail\nAkeeb";
+    std::string proj_man = "a dude";
+    std::string proj_client = "Idk someone";
     std::chrono::time_point<std::chrono::high_resolution_clock> begin_time;
     int hours;
     int minutes;
     int seconds;
 
     ProjectWindow() { }
-    ProjectWindow(sf::Font& font, std::string title, std::string description) {
+    ProjectWindow(sf::Font& font, std::string title, std::string manager, std::string client) {
         f = font;
         proj_title = title;
-        proj_desc = description;
+        proj_man = manager;
+        proj_client = client;
         hours = 0;
         minutes = 0;
         seconds = 0;
@@ -52,9 +55,13 @@ public:
         proj_t_txt.setPosition({200, 110});
         proj_t_txt.setFont(font);
 
-        proj_d_txt = Button(proj_desc, 20, sf::Color(64, 156, 120));
-        proj_d_txt.setPosition({35, 160});
-        proj_d_txt.setFont(font);
+        proj_m_txt = Button(proj_man, 20, sf::Color(64, 156, 120));
+        proj_m_txt.setPosition({35, 160});
+        proj_m_txt.setFont(font);
+
+        proj_c_txt = Button(proj_client, 20, sf::Color(64, 156, 120));
+        proj_c_txt.setPosition({35, 210});
+        proj_c_txt.setFont(font);
 
         proj_bckgrnd.setSize({800, 200});
         proj_bckgrnd.setPosition({30, 150});
@@ -84,7 +91,8 @@ public:
         sign_out_btn.drawTo(window);
         proj_plain_txt.drawTo(window);
         proj_t_txt.drawTo(window);
-        proj_d_txt.drawTo(window);
+        proj_m_txt.drawTo(window);
+        proj_c_txt.drawTo(window);
         clockio_btn.drawTo(window);
         time_txt.drawTo(window);
         assign_user_btn.drawTo(window);
@@ -287,6 +295,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
             Textbox title_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             title_tbox.setFont(projectWindow->f);
             title_tbox.setPosition({150, 30});
+            title_tbox.setText(projectWindow->proj_t_txt.getText());
 
             Button manager_txt = Button("Manager:", 15, sf::Color(64, 156, 120));
             manager_txt.setPosition({30, 100});
@@ -295,6 +304,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
             Textbox manager_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             manager_tbox.setFont(projectWindow->f);
             manager_tbox.setPosition({150, 100});
+            manager_tbox.setText(projectWindow->proj_m_txt.getText());
 
             Button client_txt = Button("Client:", 15, sf::Color(64, 156, 120));
             client_txt.setPosition({30, 170});
@@ -303,7 +313,7 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
             Textbox client_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             client_tbox.setFont(projectWindow->f);
             client_tbox.setPosition({150, 170});
-
+            client_tbox.setText(projectWindow->proj_c_txt.getText());
 
             Button create_btn = Button("Finalize Edit", {200, 50}, 15, sf::Color::White, sf::Color::Black);
             create_btn.setPosition({100, 250});
@@ -373,6 +383,8 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
 
                         if (create_btn.isMouseOver(edit_proj_window)) {
                             projectWindow->proj_t_txt.setText( title_tbox.getText());
+                            projectWindow->proj_m_txt.setText( manager_tbox.getText());
+                            projectWindow->proj_c_txt.setText( client_tbox.getText());
                             std::cout << title_tbox.getText() << " - is the New Title\nManager: " << manager_tbox.getText() << "\n" << "Client: " << client_tbox.getText() << std::endl;
                             edit_proj_window.close();
                         }
