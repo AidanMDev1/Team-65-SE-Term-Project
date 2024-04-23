@@ -65,8 +65,6 @@ bool request::login(string user, string pass)
     //parse through response_data to find user details and store into request class variables
     //since rn it returns smth like {["id":"someid", "username":"someusername", "password":"somepassword", etc.]}
     string delimiter = ",";
-    size_t pos_start = 0, pos_end, delim_length = delimiter.length();
-    std::string token;
     std::vector<std::string> res;
     size_t start = 0;
 
@@ -104,21 +102,42 @@ bool request::login(string user, string pass)
         res2[i].erase(res2[i].begin() + quotes2);
     }
 
-    // for(int i = 0; i<res2.size(); i++){
-    //     cout << res2[i] << endl;
-    // }
-
     size_t open_bracket = response_data.find("[");
     size_t close_bracket = response_data.find("]");
-    string projectTemp = response_data.substr(open_bracket, close_bracket - open_bracket + 1);
-    res2[4] = projectTemp;
+    string projectTemp = response_data.substr(open_bracket + 1, close_bracket - open_bracket-1);
+
+    std::string token2;
+    std::vector<std::string> projects;
+    size_t start2 = 0;
+
+   
+    for (size_t found = projectTemp.find(delimiter); found != string::npos; found = projectTemp.find(delimiter, start2)) 
+    {
+        projects.emplace_back(projectTemp.begin() + start2, projectTemp.begin() + found);
+        start2 = found + delimiter.size();
+    }
+    if (start2 != projectTemp.size()){
+         projects.emplace_back(projectTemp.begin() + start2, projectTemp.end());
+    }
+    
+    for(int i = 0; i<projects.size(); i++){
+        size_t quotes = projects[i].find("\"");
+        projects[i].erase(projects[i].begin() + quotes);
+
+        size_t quotes2 = projects[i].find("\"");
+        projects[i].erase(projects[i].begin() + quotes2);
+    }
     
     username = res2[1]; 
     password = res2[2];
     user_role = res2[3];
-    assigned_projects = res2[4]; //assigned as [projectName], if error check this first
-   // cout << "ap: "<<assigned_projects << endl;
-    
+    assigned_projects = projects; //assigned as [projectName], if error check this first
+
+    // cout << username << " " << password << " " << user_role<< endl;
+    // for(int i = 0; i<assigned_projects.size(); i++){
+    //      cout << i << ": " <<assigned_projects[i] << endl;
+    // }
+
     return true;
 };
 
