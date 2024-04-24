@@ -322,19 +322,27 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             password_tbox.setPosition({150, 100});
 
             Button project_txt = Button("Project:", 15, sf::Color(64, 156, 120));
-            project_txt.setPosition({30, 170});
+            project_txt.setPosition({30, 240});
             project_txt.setFont(mainWindow->f);
 
             Textbox project_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             project_tbox.setFont(mainWindow->f);
-            project_tbox.setPosition({150, 170});
+            project_tbox.setPosition({150, 240});
+
+            Button role_txt = Button("Role:", 15, sf::Color(64, 156, 120));
+            role_txt.setPosition({30, 170});
+            role_txt.setFont(mainWindow->f);
+
+            Textbox role_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            role_tbox.setFont(mainWindow->f);
+            role_tbox.setPosition({150, 170});
 
             Button create_btn = Button("Create", {100, 50}, 15, sf::Color::White, sf::Color::Black);
-            create_btn.setPosition({100, 250});
+            create_btn.setPosition({100, 300});
             create_btn.setFont(mainWindow->f);
 
             Button delete_btn = Button("Delete", {100, 50}, 15, sf::Color::White, sf::Color::Black);
-            delete_btn.setPosition({300, 250});
+            delete_btn.setPosition({300, 300});
             delete_btn.setFont(mainWindow->f);
 
             sf::RenderWindow cr_del_window(sf::VideoMode(600, 400), "Create or Delete User", sf::Style::Titlebar | sf::Style::Close);
@@ -361,6 +369,9 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                         }
                         if (project_tbox.isSelected()) {
                             project_tbox.typeOn(cr_del_event);
+                        }
+                        if (role_tbox.isSelected()) {
+                            role_tbox.typeOn(cr_del_event);
                         }
                     }
 
@@ -405,6 +416,12 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                         else {
                             project_tbox.setSelected(false);
                         }
+                        if (role_tbox.isMouseOver(cr_del_window)) {
+                            role_tbox.setSelected(true);
+                        }
+                        else {
+                            role_tbox.setSelected(false);
+                        }
 
                         if (create_btn.isMouseOver(cr_del_window)) {
                             std::cout << user_tbox.getText() << " Created" << std::endl;
@@ -424,6 +441,8 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                 password_tbox.drawTo(cr_del_window);
                 project_txt.drawTo(cr_del_window);
                 project_tbox.drawTo(cr_del_window);
+                role_txt.drawTo(cr_del_window);
+                role_tbox.drawTo(cr_del_window);
                 create_btn.drawTo(cr_del_window);
                 delete_btn.drawTo(cr_del_window);
                 cr_del_window.display();
