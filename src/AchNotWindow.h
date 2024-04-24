@@ -10,7 +10,10 @@ public:
     sf::Texture back_img;
     sf::Sprite back_btn;
     sf::Texture pgdown_img;
+    sf::Texture pgup_img;
+    sf::Sprite not_pgup_btn;    
     sf::Sprite not_pgdown_btn;
+    sf::Sprite ach_pgup_btn;
     sf::Sprite ach_pgdown_btn;
     Button not_txt;
     Button ach_txt;
@@ -26,19 +29,29 @@ public:
         sign_out_btn.setFont(font);
 
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
+        
 
         back_btn.setTexture(back_img);
         back_btn.setScale({0.15, 0.15});
 
         pgdown_img.loadFromFile("files/page_down.png");
+        pgup_img.loadFromFile("files/page_up.png");
 
         not_pgdown_btn.setTexture(pgdown_img);
         not_pgdown_btn.setScale({0.05, 0.05});
         not_pgdown_btn.setPosition({200, 750});
 
+        not_pgup_btn.setTexture(pgup_img);
+        not_pgup_btn.setScale({0.05, 0.05});
+        not_pgup_btn.setPosition({200, 200});
+
         ach_pgdown_btn.setTexture(pgdown_img);
         ach_pgdown_btn.setScale({0.05, 0.05});
         ach_pgdown_btn.setPosition({630, 750});
+
+        ach_pgup_btn.setTexture(pgup_img);
+        ach_pgup_btn.setScale({0.05, 0.05});
+        ach_pgup_btn.setPosition({630, 200});
 
         not_txt = Button("Notifications:", 30, sf::Color(64, 156, 120));
         not_txt.setPosition({100, 110});
@@ -56,16 +69,26 @@ public:
         ach_bckgrnd.setPosition({450, 200});
         ach_bckgrnd.setFillColor(sf::Color(146, 176, 164));
 
-        Button not1 = Button("- Jerry: erm what the sigma?", 20, sf::Color(64, 156, 120));
-        not1.setPosition({50, 220});
+        Button not1 = Button("- Jerry: erm what the sigma?", 15, sf::Color(64, 156, 120));
+        not1.setPosition({50, 250});
         not1.setFont(font);
 
+        Button not2 = Button("- Jerry: erm what the sigma?????", 15, sf::Color(64, 156, 120));
+        not2.setPosition({50, 250 + 30}); // 250 + i*30
+        not2.setFont(font);
+
         Button ach1 = Button("- Be COOL XD", 20, sf::Color(64, 156, 120));
-        ach1.setPosition({470, 220});
+        ach1.setPosition({470, 250});
         ach1.setFont(font);
 
+        Button ach2 = Button("- Be COOL XD 2", 20, sf::Color(64, 156, 120));
+        ach2.setPosition({470, 250 + 30}); // 250 + i * 30
+        ach2.setFont(font);
+
         lo_nots.push_back(not1);
+        lo_nots.push_back(not2);
         lo_achs.push_back(ach1);
+        lo_achs.push_back(ach2);
     }
     ~AchNotWindow() { }
 
@@ -75,6 +98,8 @@ public:
         window.draw(back_btn);
         window.draw(not_pgdown_btn);
         window.draw(ach_pgdown_btn);
+        window.draw(not_pgup_btn);
+        window.draw(ach_pgup_btn);
         sign_out_btn.drawTo(window);
         not_txt.drawTo(window);
         ach_txt.drawTo(window);
@@ -112,6 +137,19 @@ public:
         return false;
     }
 
+    bool isMouseOverNotPU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = not_pgup_btn.getPosition().x;
+        float btn_pos_y = not_pgup_btn.getPosition().y;
+        float btn_xpos_width = not_pgup_btn.getPosition().x + not_pgup_btn.getLocalBounds().width * 0.05;
+        float btn_xpos_height = not_pgup_btn.getPosition().y + not_pgup_btn.getLocalBounds().height * 0.05;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
     bool isMouseOverAchPD(sf::RenderWindow& window) {
         float mouse_x = sf::Mouse::getPosition(window).x;
         float mouse_y = sf::Mouse::getPosition(window).y;
@@ -119,6 +157,19 @@ public:
         float btn_pos_y = ach_pgdown_btn.getPosition().y;
         float btn_xpos_width = ach_pgdown_btn.getPosition().x + ach_pgdown_btn.getLocalBounds().width * 0.1;
         float btn_xpos_height = ach_pgdown_btn.getPosition().y + ach_pgdown_btn.getLocalBounds().height * 0.1;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
+
+    bool isMouseOverAchPU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = ach_pgup_btn.getPosition().x;
+        float btn_pos_y = ach_pgup_btn.getPosition().y;
+        float btn_xpos_width = ach_pgup_btn.getPosition().x + ach_pgup_btn.getLocalBounds().width * 0.1;
+        float btn_xpos_height = ach_pgup_btn.getPosition().y + ach_pgup_btn.getLocalBounds().height * 0.1;
         if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
             return true;
         }
@@ -144,8 +195,14 @@ void AchNotWindowEvents(sf::RenderWindow& window, AchNotWindow* achNotWindow, bo
             login_screen = true;
             ach_not_screen = false;
         }
+        if(achNotWindow->isMouseOverAchPU(window)) {
+            std::cout << "Achievement pg up" << std::endl;
+        }
         if (achNotWindow->isMouseOverAchPD(window)) {
             std::cout << "Achievement pg down" << std::endl;
+        }
+        if (achNotWindow->isMouseOverNotPU(window)) {
+            std::cout << "Notification pg up" << std::endl;
         }
         if (achNotWindow->isMouseOverNotPD(window)) {
             std::cout << "Notification pg down" << std::endl;

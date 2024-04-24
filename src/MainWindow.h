@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Button.h"
 #include "ProjectWindow.h"
+#include "TimesWindow.h"
 #include "request.h"
 
 class MainWindow {
@@ -18,6 +19,8 @@ public:
     sf::RectangleShape proj_bckgrnd;
     sf::Texture pgdown_img;
     sf::Sprite proj_pgdown_btn;
+    sf::Texture pgup_img;
+    sf::Sprite proj_pgup_btn;
     Button contact_btn;
     Button create_proj_btn;
     Button create_users_btn;
@@ -50,12 +53,17 @@ public:
         //this is where we show all projects that are selectable
         for (int i = 0; i < req.assigned_projects.size(); i++){
             Button test = Button(req.assigned_projects[i], {750, 50}, 25, sf::Color(230, 230, 230), sf::Color(64, 156, 120));
-            test.setPosition({50, 160 + 75*i});
+            test.setPosition({50, 220 + 75*i});
             test.setFont(font);
             lo_proj.push_back(test);
         }
 
         pgdown_img.loadFromFile("files/page_down.png");
+        pgup_img.loadFromFile("files/page_up.png");
+
+        proj_pgup_btn.setTexture(pgup_img);
+        proj_pgup_btn.setScale({0.1, 0.1});
+        proj_pgup_btn.setPosition({370, 150});
 
         proj_pgdown_btn.setTexture(pgdown_img);
         proj_pgdown_btn.setScale({0.1, 0.1});
@@ -86,6 +94,7 @@ public:
     void drawTo(sf::RenderWindow& window) {
         window.draw(proj_bckgrnd);
         window.draw(proj_pgdown_btn);
+        window.draw(proj_pgup_btn);
         welcome_txt.drawTo(window);
         sign_out_btn.drawTo(window);
         projects_txt.drawTo(window);
@@ -111,9 +120,22 @@ public:
         }
         return false;
     }
+
+    bool isMouseOverProjPU(sf::RenderWindow& window) {
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float btn_pos_x = proj_pgup_btn.getPosition().x;
+        float btn_pos_y = proj_pgup_btn.getPosition().y;
+        float btn_xpos_width = proj_pgup_btn.getPosition().x + proj_pgup_btn.getLocalBounds().width * 0.1;
+        float btn_xpos_height = proj_pgup_btn.getPosition().y + proj_pgup_btn.getLocalBounds().height * 0.1;
+        if (mouse_x < btn_xpos_width && mouse_x > btn_pos_x && mouse_y < btn_xpos_height && mouse_y > btn_pos_y) {
+            return true;
+        }
+        return false;
+    }
 };
 
-void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, bool& login_screen, 
+void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectWindow* projectWindow, TimesWindow* timesWindow, bool& login_screen, 
                         bool& main_screen, bool& time_logs_screen, bool& project_screen, bool& ach_not_screen, sf::Event& e, request& req, int& proj_sel) {
     // highlight buttons when hovered over
     if (e.type == sf::Event::MouseMoved) {
@@ -270,10 +292,11 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                             std::string notif = msg_tbox.getText();
 
                             bool check = false;
-                            bool check2 = false;
                             check = req.check_user(username); //checks if user exists in db
                             if(check){
-                                check2 = req.send_notification(username, req.username, notif);
+                                req.send_notification(username, req.username, notif);
+                            }else{
+                                std::cout << username << " does not exist" << std::endl;
                             }
 
                             contact_window.close();
@@ -305,12 +328,28 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
             user_tbox.setFont(mainWindow->f);
             user_tbox.setPosition({150, 30});
 
+            Button password_txt = Button("Password:", 15, sf::Color(64, 156, 120));
+            password_txt.setPosition({30, 100});
+            password_txt.setFont(mainWindow->f);
+
+            Textbox password_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            password_tbox.setFont(mainWindow->f);
+            password_tbox.setPosition({150, 100});
+
+            Button project_txt = Button("Project:", 15, sf::Color(64, 156, 120));
+            project_txt.setPosition({30, 170});
+            project_txt.setFont(mainWindow->f);
+
+            Textbox project_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            project_tbox.setFont(mainWindow->f);
+            project_tbox.setPosition({150, 170});
+
             Button create_btn = Button("Create", {100, 50}, 15, sf::Color::White, sf::Color::Black);
-            create_btn.setPosition({100, 200});
+            create_btn.setPosition({100, 250});
             create_btn.setFont(mainWindow->f);
 
             Button delete_btn = Button("Delete", {100, 50}, 15, sf::Color::White, sf::Color::Black);
-            delete_btn.setPosition({300, 200});
+            delete_btn.setPosition({300, 250});
             delete_btn.setFont(mainWindow->f);
 
             sf::RenderWindow cr_del_window(sf::VideoMode(600, 400), "Create or Delete User", sf::Style::Titlebar | sf::Style::Close);
@@ -331,6 +370,12 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                     if (cr_del_event.type == sf::Event::TextEntered) {
                         if (user_tbox.isSelected()) {
                             user_tbox.typeOn(cr_del_event);
+                        }
+                        if (password_tbox.isSelected()) {
+                            password_tbox.typeOn(cr_del_event);
+                        }
+                        if (project_tbox.isSelected()) {
+                            project_tbox.typeOn(cr_del_event);
                         }
                     }
 
@@ -364,11 +409,30 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                             user_tbox.setSelected(false);
                         }
 
+                        if (password_tbox.isMouseOver(cr_del_window)) {
+                            password_tbox.setSelected(true);
+                        }
+                        else {
+                            password_tbox.setSelected(false);
+                        }
+
+                        if (project_tbox.isMouseOver(cr_del_window)) {
+                            project_tbox.setSelected(true);
+                        }
+                        else {
+                            project_tbox.setSelected(false);
+                        }                        
+
                         if (create_btn.isMouseOver(cr_del_window)) {
                             std::cout << user_tbox.getText() << " Created" << std::endl;
-                            // string username = user_tbox.getText();
-                            // bool check  = false;
-                            // check = req.create_user(username, password, role, proj);
+                            std::cout << password_tbox.getText() << " Created" << std::endl;
+                            std::cout << project_tbox.getText() << " Created" << std::endl;
+                            // std::string username = user_tbox.getText();
+                            // std::string password = password_tbox.getText();
+                            //std::string project = project_tbox.getText();
+
+                            // req.create_user(username, password, role, project);
+                            // req.total_time_create(username);
                             cr_del_window.close();
                         }
                         if (delete_btn.isMouseOver(cr_del_window)) {
@@ -376,7 +440,14 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
 
                             string username = user_tbox.getText();
                             bool check = false;
-                            check = req.delete_user(username);
+                            
+                            check = req.check_user(username);
+                            if(check){
+                                req.delete_user(username);
+                            }else{
+                                std::cout << username << " does not exist" << std::endl;
+                            }
+                            
 
                             cr_del_window.close();
                         }
@@ -386,6 +457,10 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                 cr_del_window.draw(cr_del_bckrnd);
                 user_txt.drawTo(cr_del_window);
                 user_tbox.drawTo(cr_del_window);
+                password_txt.drawTo(cr_del_window);
+                password_tbox.drawTo(cr_del_window);
+                project_txt.drawTo(cr_del_window);
+                project_tbox.drawTo(cr_del_window);                
                 create_btn.drawTo(cr_del_window);
                 delete_btn.drawTo(cr_del_window);
                 cr_del_window.display();
@@ -496,10 +571,11 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                             std::string proj_client = client_tbox.getText();
 
                             bool check = false;
-                            bool check2 = false;
                             check = req.check_user(proj_mana);
                             if (check){
-                                check2 = req.create_project(proj_name, proj_mana, proj_client);
+                                req.create_project(proj_name, proj_mana, proj_client);
+                            }else{
+                                std::cout << proj_mana << " is not a valid project manager" << std::endl;
                             }
                             
                             cr_proj_window.close();
@@ -521,6 +597,7 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
 
         if (mainWindow->access_logs_btn.isMouseOver(window)) {
             std::cout << "-> Timelog Screen" << std::endl;
+
             time_logs_screen = true;
             main_screen = false;
         }
@@ -534,6 +611,11 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
         if (mainWindow->isMouseOverProjPD(window)) {
             std::cout << "Projects page down" << std::endl;
         }
+
+        if (mainWindow->isMouseOverProjPU(window)) {
+            std::cout << "Projects page up" << std::endl;
+        }        
+
         for (auto& proj : mainWindow->lo_proj) {
             if (proj.isMouseOver(window)) {
 
@@ -542,7 +624,6 @@ void MainWindowEvents(sf::RenderWindow& window, MainWindow* mainWindow, ProjectW
                 auto it = find(req.assigned_projects.begin(), req.assigned_projects.end(), input);
                 if (it != req.assigned_projects.end()){
                     int index = it - req.assigned_projects.begin();
-                    std::cout << index << std::endl;
                     proj_sel = index;
                 }
 

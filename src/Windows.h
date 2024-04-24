@@ -20,8 +20,11 @@
 void startWindows() {
     request req;
     int proj_sel = -1;
+    std::string cho_project = "";
+    std::string cho_user = "";
     // WINDOW booleans
     bool signed_in = false;
+    bool signed_in2 = false;
     bool login_screen = true;
     bool main_screen = false;
     bool time_logs_screen = false;
@@ -47,7 +50,7 @@ void startWindows() {
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR, req);
     MainWindow* mainWindow = new MainWindow(CNR, req, signed_in, proj_sel);
-    TimesWindow* timesWindow = new TimesWindow(CNR, req);
+    TimesWindow* timesWindow = new TimesWindow(CNR, req, signed_in2, cho_project, cho_user);
     ProjectWindow* projectWindow = new ProjectWindow(CNR, req, proj_sel);
     AchNotWindow* achNotWindow = new AchNotWindow(CNR, req);
 
@@ -85,10 +88,15 @@ void startWindows() {
                     signed_in = true;
                     mainWindow = new MainWindow(CNR, req, signed_in, proj_sel);
                 }
-                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req, proj_sel);
+                MainWindowEvents(window, mainWindow, projectWindow, timesWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req, proj_sel);
             }
             if (time_logs_screen) {
-                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e, req);
+                if (!signed_in2){
+                    delete timesWindow;
+                    signed_in2 = true;
+                    timesWindow = new TimesWindow(CNR, req, signed_in2, cho_project, cho_user); 
+                }
+                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e, req, cho_project, cho_user);
             }
             if (project_screen) {
                 ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e, req, proj_sel);
@@ -104,6 +112,7 @@ void startWindows() {
             if (loginWindow == nullptr) {
                 loginWindow = new LoginWindow(CNR, req);
                 signed_in = false;
+                signed_in2 = false;
             }
             window.clear();
             window.draw(background);
