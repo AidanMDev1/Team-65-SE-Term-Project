@@ -5,6 +5,7 @@
 
 class TimesWindow {
 public:
+    sf::Font f;
     sf::Texture back_img;
     sf::Sprite back_btn;
     sf::Texture pgdown_img;
@@ -19,9 +20,11 @@ public:
     Button time_logs_txt;
     sf::RectangleShape time_bckgrnd;
     Button employee_txt;
+    Button employee_btn;
     sf::RectangleShape employee_bckgrnd;
     Button alternate_btn;
     Button specific_txt;
+    Button specify_btn;
     sf::RectangleShape specific_bckgrnd;
     std::vector<Button> lo_times;
     std::vector<Button> lo_projects;
@@ -29,6 +32,7 @@ public:
 
     TimesWindow() { }
     TimesWindow(sf::Font& font) {
+        f = font;
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
         back_btn.setTexture(back_img);
         back_btn.setScale({0.15, 0.15});
@@ -76,6 +80,10 @@ public:
         employee_txt.setPosition({30, 590});
         employee_txt.setFont(font);
 
+        employee_btn = Button("Who?", {120, 40}, 15, sf::Color::White, sf::Color::Black);
+        employee_btn.setPosition({440, 780});
+        employee_btn.setFont(font);
+
         employee_bckgrnd.setSize({400, 200});
         employee_bckgrnd.setPosition({30, 630});
         employee_bckgrnd.setFillColor(sf::Color(146, 176, 164));
@@ -87,6 +95,10 @@ public:
         specific_txt = Button("Specific Project:", 18, sf::Color(64, 156, 120));
         specific_txt.setPosition({660, 120});
         specific_txt.setFont(font);
+
+        specify_btn = Button("Which One?", {150, 40}, 15, sf::Color::White, sf::Color::Black);
+        specify_btn.setPosition({670, 560});
+        specify_btn.setFont(font);
 
         specific_bckgrnd.setSize({175, 400});
         specific_bckgrnd.setPosition({660, 150});
@@ -139,8 +151,10 @@ public:
         sign_out_btn.drawTo(window);
         time_logs_txt.drawTo(window);
         employee_txt.drawTo(window);
+        employee_btn.drawTo(window);
         alternate_btn.drawTo(window);
         specific_txt.drawTo(window);
+        specify_btn.drawTo(window);
 
         for (auto& time : lo_times) {
             time.drawTo(window);
@@ -265,6 +279,22 @@ void TimesWindowEvents(sf::RenderWindow& window, TimesWindow* timesWindow, bool&
             timesWindow->alternate_btn.setBackColor(sf::Color::White);
             timesWindow->alternate_btn.setTextColor(sf::Color::Black);
         }
+        if (timesWindow->specify_btn.isMouseOver(window)) {
+            timesWindow->specify_btn.setBackColor(sf::Color(64, 156, 120));
+            timesWindow->specify_btn.setTextColor(sf::Color::White);
+        }
+        else {
+            timesWindow->specify_btn.setBackColor(sf::Color::White);
+            timesWindow->specify_btn.setTextColor(sf::Color::Black);
+        }
+        if (timesWindow->employee_btn.isMouseOver(window)) {
+            timesWindow->employee_btn.setBackColor(sf::Color(64, 156, 120));
+            timesWindow->employee_btn.setTextColor(sf::Color::White);
+        }
+        else {
+            timesWindow->employee_btn.setBackColor(sf::Color::White);
+            timesWindow->employee_btn.setTextColor(sf::Color::Black);
+        }
     }
 
     // action on click for buttons
@@ -282,6 +312,151 @@ void TimesWindowEvents(sf::RenderWindow& window, TimesWindow* timesWindow, bool&
                 timesWindow->alternate_btn.setText("Company Times");
             }
         }
+
+        if (timesWindow->employee_btn.isMouseOver(window)) {
+            sf::RectangleShape emp_bckrnd;
+            emp_bckrnd.setSize({600, 400});
+            emp_bckrnd.setFillColor(sf::Color(230, 230, 230)); // GREY
+
+            Button emp_txt = Button("Employee:", 15, sf::Color(64, 156, 120));
+            emp_txt.setPosition({30, 30});
+            emp_txt.setFont(timesWindow->f);
+
+            Textbox emp_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            emp_tbox.setFont(timesWindow->f);
+            emp_tbox.setPosition({150, 30});
+
+            Button choose_btn = Button("Choose", {100, 50}, 15, sf::Color::White, sf::Color::Black);
+            choose_btn.setPosition({100, 200});
+            choose_btn.setFont(timesWindow->f);
+
+            sf::RenderWindow emp_window(sf::VideoMode(600, 400), "Choose Employee", sf::Style::Titlebar | sf::Style::Close);
+
+            while (emp_window.isOpen()) {
+                sf::Event emp_event;
+
+                // Key Presses and Info
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    emp_tbox.setSelected(false);
+                }
+
+                while (emp_window.pollEvent(emp_event)) {
+                    if (emp_event.type == sf::Event::Closed) {
+                        emp_window.close();
+                    }
+
+                    if (emp_event.type == sf::Event::TextEntered) {
+                        if (emp_tbox.isSelected()) {
+                            emp_tbox.typeOn(emp_event);
+                        }
+                    }
+
+                    if (emp_event.type == sf::Event::MouseMoved) {
+                        if (choose_btn.isMouseOver(emp_window)) {
+                            choose_btn.setBackColor(sf::Color(64, 156, 120));
+                            choose_btn.setTextColor(sf::Color::White);
+                        }
+                        else {
+                            choose_btn.setBackColor(sf::Color::White);
+                            choose_btn.setTextColor(sf::Color::Black);
+                        }
+                    }
+
+                    if (emp_event.type == sf::Event::MouseButtonPressed) {
+                        if (emp_tbox.isMouseOver(emp_window)) {
+                            emp_tbox.setSelected(true);
+                        }
+                        else {
+                            emp_tbox.setSelected(false);
+                        }
+
+                        if (choose_btn.isMouseOver(emp_window)) {
+                            std::cout << emp_tbox.getText() << " Chosen" << std::endl;
+                            emp_window.close();
+                        }
+                    }
+                }
+                emp_window.clear();
+                emp_window.draw(emp_bckrnd);
+                emp_txt.drawTo(emp_window);
+                emp_tbox.drawTo(emp_window);
+                choose_btn.drawTo(emp_window);
+                emp_window.display();
+            }
+        }
+
+        if (timesWindow->specify_btn.isMouseOver(window)) {
+            sf::RectangleShape spec_bckrnd;
+            spec_bckrnd.setSize({600, 400});
+            spec_bckrnd.setFillColor(sf::Color(230, 230, 230)); // GREY
+
+            Button spec_txt = Button("Project:", 15, sf::Color(64, 156, 120));
+            spec_txt.setPosition({30, 30});
+            spec_txt.setFont(timesWindow->f);
+
+            Textbox spec_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
+            spec_tbox.setFont(timesWindow->f);
+            spec_tbox.setPosition({150, 30});
+
+            Button choose_btn = Button("Choose", {100, 50}, 15, sf::Color::White, sf::Color::Black);
+            choose_btn.setPosition({100, 200});
+            choose_btn.setFont(timesWindow->f);
+
+            sf::RenderWindow spec_window(sf::VideoMode(600, 400), "Specify Project", sf::Style::Titlebar | sf::Style::Close);
+
+            while (spec_window.isOpen()) {
+                sf::Event spec_event;
+
+                // Key Presses and Info
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    spec_tbox.setSelected(false);
+                }
+
+                while (spec_window.pollEvent(spec_event)) {
+                    if (spec_event.type == sf::Event::Closed) {
+                        spec_window.close();
+                    }
+
+                    if (spec_event.type == sf::Event::TextEntered) {
+                        if (spec_tbox.isSelected()) {
+                            spec_tbox.typeOn(spec_event);
+                        }
+                    }
+
+                    if (spec_event.type == sf::Event::MouseMoved) {
+                        if (choose_btn.isMouseOver(spec_window)) {
+                            choose_btn.setBackColor(sf::Color(64, 156, 120));
+                            choose_btn.setTextColor(sf::Color::White);
+                        }
+                        else {
+                            choose_btn.setBackColor(sf::Color::White);
+                            choose_btn.setTextColor(sf::Color::Black);
+                        }
+                    }
+
+                    if (spec_event.type == sf::Event::MouseButtonPressed) {
+                        if (spec_tbox.isMouseOver(spec_window)) {
+                            spec_tbox.setSelected(true);
+                        }
+                        else {
+                            spec_tbox.setSelected(false);
+                        }
+
+                        if (choose_btn.isMouseOver(spec_window)) {
+                            std::cout << spec_tbox.getText() << " Chosen" << std::endl;
+                            spec_window.close();
+                        }
+                    }
+                }
+                spec_window.clear();
+                spec_window.draw(spec_bckrnd);
+                spec_txt.drawTo(spec_window);
+                spec_tbox.drawTo(spec_window);
+                choose_btn.drawTo(spec_window);
+                spec_window.display();
+            }
+        }
+
         if (timesWindow->isMouseOverBack(window)) {
             std::cout << "-> Main Screen" << std::endl;
             main_screen = true;
