@@ -67,16 +67,26 @@ public:
         ach_bckgrnd.setPosition({450, 200});
         ach_bckgrnd.setFillColor(sf::Color(146, 176, 164));
 
-        Button not1 = Button("- Jerry: erm what the sigma?", 20, sf::Color(64, 156, 120));
+        Button not1 = Button("- Jerry: erm what the sigma?", 15, sf::Color(64, 156, 120));
         not1.setPosition({50, 250});
         not1.setFont(font);
+
+        Button not2 = Button("- Jerry: erm what the sigma?????", 15, sf::Color(64, 156, 120));
+        not2.setPosition({50, 250 + 30}); // 250 + i*30
+        not2.setFont(font);
 
         Button ach1 = Button("- Be COOL XD", 20, sf::Color(64, 156, 120));
         ach1.setPosition({470, 250});
         ach1.setFont(font);
 
+        Button ach2 = Button("- Be COOL XD 2", 20, sf::Color(64, 156, 120));
+        ach2.setPosition({470, 250 + 30}); // 250 + i * 30
+        ach2.setFont(font);
+
         lo_nots.push_back(not1);
+        lo_nots.push_back(not2);
         lo_achs.push_back(ach1);
+        lo_achs.push_back(ach2);
     }
     ~AchNotWindow() { }
 

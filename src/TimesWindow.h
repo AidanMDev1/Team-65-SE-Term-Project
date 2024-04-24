@@ -23,6 +23,9 @@ public:
     Button alternate_btn;
     Button specific_txt;
     sf::RectangleShape specific_bckgrnd;
+    std::vector<Button> lo_times;
+    std::vector<Button> lo_projects;
+    std::vector<Button> lo_employees;
 
     TimesWindow() { }
     TimesWindow(sf::Font& font) {
@@ -88,6 +91,37 @@ public:
         specific_bckgrnd.setSize({175, 400});
         specific_bckgrnd.setPosition({660, 150});
         specific_bckgrnd.setFillColor(sf::Color(146, 176, 164));
+
+        Button time1 = Button("clockin #0: 4/23/2024, 01:21 AM", 20, sf::Color(64, 156, 120));
+        time1.setPosition({50, 230});
+        time1.setFont(font);
+
+        Button time2 = Button("clockin #1: 4/23/2024, 01:21 AM", 20, sf::Color(64, 156, 120));
+        time2.setPosition({50, 230 + 30}); // + 30 for mult
+        time2.setFont(font);
+
+        Button proj1 = Button("TEST PROJ", 15, sf::Color(64, 156, 120));
+        proj1.setPosition({680, 200});
+        proj1.setFont(font);
+
+        Button proj2 = Button("TEST PROJ 2", 15, sf::Color(64, 156, 120));
+        proj2.setPosition({680, 200 + 20}); // + 20 for mult
+        proj2.setFont(font);
+
+        Button emp1 = Button("employee overworked", 15, sf::Color(64, 156, 120));
+        emp1.setPosition({50, 680});
+        emp1.setFont(font);
+
+        Button emp2 = Button("employee overworked 2", 15, sf::Color(64, 156, 120));
+        emp2.setPosition({50, 680 + 20}); // +20 for mult
+        emp2.setFont(font);
+
+        lo_times.push_back(time1);
+        lo_times.push_back(time2);
+        lo_projects.push_back(proj1);
+        lo_projects.push_back(proj2);
+        lo_employees.push_back(emp1);
+        lo_employees.push_back(emp2);
     }
     ~TimesWindow() { }
 
@@ -107,6 +141,16 @@ public:
         employee_txt.drawTo(window);
         alternate_btn.drawTo(window);
         specific_txt.drawTo(window);
+
+        for (auto& time : lo_times) {
+            time.drawTo(window);
+        }
+        for (auto& proj : lo_projects) {
+            proj.drawTo(window);
+        }
+        for (auto& emp : lo_employees) {
+            emp.drawTo(window);
+        }
     }
 
     bool isMouseOverBack(sf::RenderWindow& window) {
