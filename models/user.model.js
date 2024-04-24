@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Time = require('./time.model');
 
 const UserSchema = mongoose.Schema(
     {
@@ -18,8 +19,8 @@ const UserSchema = mongoose.Schema(
         projects: {
             type: Array,
             required: true
-        }
-    },
+        },
+    }
 );
 
 const User = mongoose.model("User", UserSchema);
