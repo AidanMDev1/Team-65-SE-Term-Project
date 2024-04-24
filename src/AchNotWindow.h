@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Button.h"
+#include "Achievements.h"
 
 class AchNotWindow {
 public:
@@ -16,13 +17,20 @@ public:
     sf::Sprite ach_pgdown_btn;
     Button not_txt;
     Button ach_txt;
+    Button stats_txt;
     sf::RectangleShape not_bckgrnd;
     sf::RectangleShape ach_bckgrnd;
     std::vector<Button> lo_nots;
-    std::vector<Button> lo_achs;
+    Achievements* achievements;
+    int total_proj;
+    int total_clock_ins;
 
     AchNotWindow() { }
     AchNotWindow(sf::Font& font) {
+        total_clock_ins = 100;
+        total_proj = 10;
+        achievements = new Achievements(font, total_clock_ins, total_proj);
+
         sign_out_btn = Button("Sign out", {90, 40}, 12, sf::Color::White, sf::Color::Black);
         sign_out_btn.setPosition({780, 30});
         sign_out_btn.setFont(font);
@@ -59,6 +67,10 @@ public:
         ach_txt.setPosition({540, 110});
         ach_txt.setFont(font);
 
+        stats_txt = Button("TOTAL CLOCK IN: " + std::to_string(total_clock_ins) + "   TOTAL PROJECTS: " + std::to_string(total_proj), 15, sf::Color(64, 156, 120));
+        stats_txt.setPosition({450, 170});
+        stats_txt.setFont(font);
+
         not_bckgrnd.setSize({400, 600});
         not_bckgrnd.setPosition({30, 200});
         not_bckgrnd.setFillColor(sf::Color(146, 176, 164));
@@ -75,18 +87,8 @@ public:
         not2.setPosition({50, 250 + 30}); // 250 + i*30
         not2.setFont(font);
 
-        Button ach1 = Button("- Be COOL XD", 20, sf::Color(64, 156, 120));
-        ach1.setPosition({470, 250});
-        ach1.setFont(font);
-
-        Button ach2 = Button("- Be COOL XD 2", 20, sf::Color(64, 156, 120));
-        ach2.setPosition({470, 250 + 30}); // 250 + i * 30
-        ach2.setFont(font);
-
         lo_nots.push_back(not1);
         lo_nots.push_back(not2);
-        lo_achs.push_back(ach1);
-        lo_achs.push_back(ach2);
     }
     ~AchNotWindow() { }
 
@@ -101,11 +103,12 @@ public:
         sign_out_btn.drawTo(window);
         not_txt.drawTo(window);
         ach_txt.drawTo(window);
+        stats_txt.drawTo(window);
 
         for (auto& notif : lo_nots) {
             notif.drawTo(window);
         }
-        for (auto& ach : lo_achs) {
+        for (auto& ach : achievements->lo_achs) {
             ach.drawTo(window);
         }
     }
