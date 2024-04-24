@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const User = require('./models/user.model.js');
 const Time = require('./models/time.model.js');
+const Totaltime = require('./models/totaltime.model.js');
 const Notification = require('./models/notification.model.js');
 const Project = require('./models/project.models.js');
 
@@ -138,6 +139,17 @@ app.get('/api/check_user/:user', async (req,res) => {
     }
 });
 
+//functionality to check if a user has a given project
+app.get('/api/check_user_project/:user/:proj', async (req,res) => {
+    try {
+        const { user, proj} = req.params;
+        const check_user_project = await User.findOne({username: user, projects: proj});
+        res.status(200).json(check_user_project);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
 //functionality for admins to assign projects to users
 app.get('/api/assign_user/:user/:proj', async (req,res) => {
     try {
@@ -193,6 +205,18 @@ app.get('/api/check_project/:proj', async (req, res) => {
     }
 });
 
+//functionality to get info about project
+app.get('/api/get_project_info/:proj', async (req, res) => {
+    try {
+        const { proj } = req.params;
+        const get_project_info = await Project.findOne({project_name: proj});
+        res.status(200).json(get_project_info);
+    } catch (error) {
+        res.status(500).json({message: error.message}); 
+    }
+});
+
+
 //functionality to get all projects under a given manager
 app.get('/api/manager_projects/:manager', async (req, res) => {
     try {
@@ -202,7 +226,74 @@ app.get('/api/manager_projects/:manager', async (req, res) => {
     } catch (error) {
         res.status(500).json({message: error.message});
     }
-})
+});
+
+//functionality to find user given project
+app.get('/api/project_members/:proj', async (req, res) => {
+    try {
+        const { proj } = req.params;
+        const project_members = await User.find({projects: proj});
+        res.status(200).json(project_members);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+//functionality to find all user clockin times for a given project
+app.get('/api/get_clockin/:user/:proj', async (req, res) => {
+    try {
+        const { user, proj } = req.params;
+        const get_clockin = await Time.find({username: user, project: proj});
+        res.status(200).json(get_clockin);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+//functionality to find all user clockout times for a given project
+app.get('/api/get_clockout/:user/:proj', async (req, res) => {
+    try {
+        const { user, proj } = req.params;
+        const get_clockout = await Time.find({username: user, project: proj});
+        res.status(200).json(get_clockout);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+//functionality for creating a total time tracker for a user
+app.get('/api/total_time_create/:user', async (req, res) => {
+    try {
+        const { user } = req.params;
+        const total_time_create = await Totaltime.create({username: user, time_worked: "0"});
+        res.status(200).json(total_time_create);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+// functionality to update total time
+app.get('/api/total_time_update/:user/:time', async (req, res) => {
+    try {
+        const { user, time } = req.params;
+        const total_time_update = await Totaltime.findOneAndUpdate({username: user}, {time_worked: time});
+        res.status(200).json(total_time_update);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+//functionality to get totaltime
+app.get('/api/get_total_time/:user', async (req, res) => {
+    try {
+        const { user } = req.params;
+        const get_total_time = await Totaltime.findOne({username: user});
+        res.status(200).json(get_total_time);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
 
 mongoose.connect("mongodb+srv://Team65:ka1o40V2jAj4SstC@questclock.ofavxyx.mongodb.net/QuestClockLogin?retryWrites=true&w=majority&appName=QuestClock")
 .then(() => {
