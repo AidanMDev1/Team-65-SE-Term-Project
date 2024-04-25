@@ -9,6 +9,10 @@ const TotaltimeSchema = mongoose.Schema(
         time_worked: {
             type: String,
             required: true,
+        },
+        times_clockin: {
+            type: String,
+            required: true,
         }
     }
 );
