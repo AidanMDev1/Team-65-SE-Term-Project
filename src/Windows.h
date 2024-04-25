@@ -20,8 +20,13 @@
 void startWindows() {
     request req;
     int proj_sel = -1;
+    std::string cho_project = "";
+    std::string cho_user = "";
     // WINDOW booleans
     bool signed_in = false;
+    bool signed_in2 = false;
+    bool signed_in3 = false;
+    bool signed_in4 = false;
     bool login_screen = true;
     bool main_screen = false;
     bool time_logs_screen = false;
@@ -47,9 +52,9 @@ void startWindows() {
     // dif windows
     LoginWindow* loginWindow = new LoginWindow(CNR, req);
     MainWindow* mainWindow = new MainWindow(CNR, req, signed_in, proj_sel);
-    TimesWindow* timesWindow = new TimesWindow(CNR, req);
-    ProjectWindow* projectWindow = new ProjectWindow(CNR, req, proj_sel);
-    AchNotWindow* achNotWindow = new AchNotWindow(CNR, req);
+    TimesWindow* timesWindow = new TimesWindow(CNR, req, signed_in2, cho_project, cho_user);
+    ProjectWindow* projectWindow = new ProjectWindow(CNR, req, signed_in3, proj_sel);
+    AchNotWindow* achNotWindow = new AchNotWindow(CNR, req, signed_in4);
 
     // Window loop
     while (window.isOpen()) {
@@ -85,15 +90,30 @@ void startWindows() {
                     signed_in = true;
                     mainWindow = new MainWindow(CNR, req, signed_in, proj_sel);
                 }
-                MainWindowEvents(window, mainWindow, projectWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req, proj_sel);
+                MainWindowEvents(window, mainWindow, projectWindow, timesWindow, login_screen, main_screen, time_logs_screen, project_screen, ach_not_screen, e, req, proj_sel);
             }
             if (time_logs_screen) {
-                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e, req);
+                if (!signed_in2){
+                    delete timesWindow;
+                    signed_in2 = true;
+                    timesWindow = new TimesWindow(CNR, req, signed_in2, cho_project, cho_user); 
+                }
+                TimesWindowEvents(window, timesWindow, login_screen, main_screen, time_logs_screen, e, req, cho_project, cho_user);
             }
             if (project_screen) {
+                if (!signed_in3){
+                    delete projectWindow;
+                    signed_in3 = true;
+                    projectWindow = new ProjectWindow(CNR, req, signed_in3, proj_sel);
+                }
                 ProjectWindowEvents(window, projectWindow, login_screen, main_screen, project_screen, e, req, proj_sel);
             }
             if (ach_not_screen) {
+                if (!signed_in4){
+                    delete achNotWindow;
+                    signed_in4 = true;
+                    achNotWindow = new AchNotWindow(CNR, req, signed_in4);
+                }
                 AchNotWindowEvents(window, achNotWindow, login_screen, main_screen, ach_not_screen, e, req);
             }
         }
@@ -104,6 +124,9 @@ void startWindows() {
             if (loginWindow == nullptr) {
                 loginWindow = new LoginWindow(CNR, req);
                 signed_in = false;
+                signed_in2 = false;
+                signed_in3 = false;
+                signed_in4 = false;
             }
             window.clear();
             window.draw(background);
@@ -115,6 +138,11 @@ void startWindows() {
                 delete loginWindow;
                 loginWindow = nullptr;
             }
+
+            signed_in2 = false;
+            signed_in3 = false;
+            signed_in4 = false;
+            
             window.clear();
             window.draw(background);
             mainWindow->drawTo(window);

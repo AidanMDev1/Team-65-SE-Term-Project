@@ -9,35 +9,48 @@
 class ProjectWindow {
 public:
     int proj_sel;
+    bool signed_in3;
     sf::Font f;
     sf::Texture back_img;
     sf::Sprite back_btn;
     Button sign_out_btn;
     Button proj_plain_txt;
     Button proj_t_txt;
-    Button proj_d_txt;
+    Button proj_m_txt;
+    Button proj_c_txt;
     sf::RectangleShape proj_bckgrnd;
     Button clockio_btn;
     Button time_txt;
     Button assign_user_btn;
     Button edit_btn;
     std::string proj_title = "TEST123";
-    std::string proj_desc = "This is a test project.\nAssigned:\nAidan\nBrian\nAbigail\nAkeeb";
+    std::string proj_man = "a dude";
+    std::string proj_client = "Idk someone";
     std::chrono::time_point<std::chrono::high_resolution_clock> begin_time;
     int hours;
     int minutes;
     int seconds;
 
     ProjectWindow() { }
-    ProjectWindow(sf::Font& font, request& req, int& proj_sel) {
+    ProjectWindow(sf::Font& font, request& req, bool s, int& proj_sel) {
 
         //only shuld work if the proj_sel is updated (when a project is selected)
         if (proj_sel != -1){
             proj_title = req.assigned_projects[proj_sel];
-            // proj_desc = client and project manager info;
+            
+            bool check = false;
+            check = req.check_project(req.assigned_projects[proj_sel]);
+            if(check){
+                std::vector<std::string> proj_info = req.get_project_info(req.assigned_projects[proj_sel]);
+                proj_man = "Project Manager: " + proj_info[1];
+                proj_client = "Client: " + proj_info[2];
+            }else{
+                std::cout << req.assigned_projects[proj_sel] << " does not exist in the database" << std::endl;
+            }   
         }
         
         f = font;
+        signed_in3 = s;
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
         back_btn.setTexture(back_img);
         back_btn.setScale({0.15, 0.15});
@@ -54,9 +67,13 @@ public:
         proj_t_txt.setPosition({200, 110});
         proj_t_txt.setFont(font);
 
-        proj_d_txt = Button(proj_desc, 20, sf::Color(64, 156, 120));
-        proj_d_txt.setPosition({35, 160});
-        proj_d_txt.setFont(font);
+        proj_m_txt = Button(proj_man, 20, sf::Color(64, 156, 120));
+        proj_m_txt.setPosition({35, 160});
+        proj_m_txt.setFont(font);
+
+        proj_c_txt = Button(proj_client, 20, sf::Color(64, 156, 120));
+        proj_c_txt.setPosition({35, 210});
+        proj_c_txt.setFont(font);
 
         proj_bckgrnd.setSize({800, 200});
         proj_bckgrnd.setPosition({30, 150});
@@ -86,7 +103,8 @@ public:
         sign_out_btn.drawTo(window);
         proj_plain_txt.drawTo(window);
         proj_t_txt.drawTo(window);
-        proj_d_txt.drawTo(window);
+        proj_m_txt.drawTo(window);
+        proj_c_txt.drawTo(window);
         clockio_btn.drawTo(window);
         time_txt.drawTo(window);
         assign_user_btn.drawTo(window);
@@ -199,7 +217,18 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                     //clock out chronos handling
                     auto end_time = std::chrono::high_resolution_clock::now();
                     auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - projectWindow->begin_time);
-                    std::cout << "time worked: " << duration.count() << std::endl;
+
+                    std::string time = to_string(duration.count());
+                    std::cout << "time worked: " << time << std::endl;
+
+                    req.time_worked = to_string(stoi(req.time_worked) + stoi(time));
+
+                    std::cout << "total time worked: " << req.time_worked << std::endl;
+
+                    req.total_clockin = to_string(stoi(req.total_clockin) + 1);
+
+                    req.total_time_update(req.username, req.time_worked, req.total_clockin);
+
                     projectWindow->hours = duration.count() / 3600;
                     projectWindow->minutes = (duration.count() % 3600) / 60;
                     projectWindow->seconds = duration.count() % 60;
@@ -314,8 +343,9 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
                             check2 = req.check_project(req.assigned_projects[proj_sel]); //check if project exists
 
                             if (check && check2){
-                                bool check3 = false;
-                                check3 = req.assign_user(username, req.assigned_projects[proj_sel]); //assign if both true
+                                req.assign_user(username, req.assigned_projects[proj_sel]); //assign if both true
+                            }else{
+                                std::cout << "either " << username << " or " << req.assigned_projects[proj_sel] << " does not exist in the database" << std::endl;
                             }
                             a_user_window.close();
                         }
@@ -342,22 +372,27 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
             Textbox title_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             title_tbox.setFont(projectWindow->f);
             title_tbox.setPosition({150, 30});
+            title_tbox.setText(projectWindow->proj_t_txt.getText());
 
             Button manager_txt = Button("Manager:", 15, sf::Color(64, 156, 120));
             manager_txt.setPosition({30, 100});
             manager_txt.setFont(projectWindow->f);
+            
 
             Textbox manager_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             manager_tbox.setFont(projectWindow->f);
             manager_tbox.setPosition({150, 100});
+            manager_tbox.setText(projectWindow->proj_m_txt.getText());
 
             Button client_txt = Button("Client:", 15, sf::Color(64, 156, 120));
             client_txt.setPosition({30, 170});
             client_txt.setFont(projectWindow->f);
+            
 
             Textbox client_tbox = Textbox(15, {400, 30}, sf::Color::Black, sf::Color(146, 176, 164), false);
             client_tbox.setFont(projectWindow->f);
             client_tbox.setPosition({150, 170});
+            client_tbox.setText(projectWindow->proj_c_txt.getText());
 
 
             Button create_btn = Button("Finalize Edit", {200, 50}, 15, sf::Color::White, sf::Color::Black);
@@ -428,16 +463,19 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
 
                         if (create_btn.isMouseOver(edit_proj_window)) {
                             projectWindow->proj_t_txt.setText( title_tbox.getText());
+                            projectWindow->proj_m_txt.setText( manager_tbox.getText());
+                            projectWindow->proj_c_txt.setText( client_tbox.getText());
                             std::cout << title_tbox.getText() << " - is the New Title\nManager: " << manager_tbox.getText() << "\n" << "Client: " << client_tbox.getText() << std::endl;
                             std::string proj_title = title_tbox.getText();
-                            std::string proj_mana = title_tbox.getText();
+                            std::string proj_mana = manager_tbox.getText();
                             std::string proj_clie = client_tbox.getText();
 
                             bool check = false;
-                            bool check2 = false;
                             check = req.check_user(proj_mana);
                             if (check){
-                                check2 = req.edit_project(proj_title, proj_mana, proj_clie);
+                                req.edit_project(proj_title, proj_mana, proj_clie);
+                            }else{
+                                std::cout << proj_mana << " not a valid project manager" << endl;
                             }
 
                             edit_proj_window.close();

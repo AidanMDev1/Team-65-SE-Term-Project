@@ -125,7 +125,11 @@ public:
         }
 
     }
-
+    void setText(std::string s) {
+        text << s;
+        textbox.setString(s);
+    }
+    
     std::string getText() {
         return text.str();
     }
@@ -139,17 +143,7 @@ public:
         if (is_selected) {
             int char_typed = input.text.unicode;
             if (char_typed < 128) {
-                if (has_limit) {
-                    if (text.str().length() <= limit) {
-                        inputLogic(char_typed);
-                    }
-                    else if (text.str().length() <= limit && char_typed == DELETE_KEY) {
-                        deleteLastChar();
-                    }
-                }
-                else {
-                    inputLogic(char_typed);
-                }
+                inputLogic(char_typed);
             }
         }
     }

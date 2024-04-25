@@ -14,6 +14,7 @@ set(SOURCE_FILES
         src/MainWindow.h
         src/TimesWindow.h
         src/AchNotWindow.h
+        src/Achievements.h
         src/request.h
         src/request.cpp)
 
@@ -23,6 +24,7 @@ find_package(SFML COMPONENTS system window graphics network audio REQUIRED)
 find_package(CURL REQUIRED) 
 
 add_executable(run ${SOURCE_FILES})
+# add_executable(run src/backendtest.cpp src/request.h src/request.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 

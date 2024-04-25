@@ -90,7 +90,6 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainW
         }
 
         if (loginWindow->login_btn.isMouseOver(window)) {
-            //std::cout << "Username: " << loginWindow->username_tbox.getText() << "\n" << "Password: " << loginWindow->password_tbox.getText() << std::endl;
             bool check = false;
             string username = loginWindow->username_tbox.getText();
             string password = loginWindow->password_tbox.getText();
@@ -100,10 +99,12 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainW
                 if (check){
                     
                     std::cout << "login successful" << std::endl;   
-                    std::cout << req.username << std::endl;
-                    std::cout << req.password << std::endl;
-                    std::cout << req.user_role << std::endl;
 
+                    bool check2 = false;
+                    check2 = req.get_total_time(username);
+                    if(!check2){  //user does not have a total time counter so create one for them
+                        req.total_time_create(username);
+                    }
                     main_screen = true;
                     login_screen = false;
                 }
