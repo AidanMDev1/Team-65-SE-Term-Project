@@ -30,9 +30,16 @@ app.get('/api/login/:user/:pass', async (req,res) => {
         const {user, pass} = req.params;
         const login = await User.findOne({username: user, password: pass});
         res.status(200).json(login);
+        //const isValid = await bcrypt.compare(password, user.password);
+        //await DelayNode(1000);
+        //res.status(200).json(isValid);
     } catch (error) {
-        res.status(500).json({message: error.message});  
+        res.status(500).json({message: error.message});
+       // res.status(600).json({message: error2.message});
     }
+    // if(!isValid){
+    //    // res.send("wrong password");
+    // }
 })
 
 //functionality for clock in
@@ -52,6 +59,7 @@ app.get('/api/clockout/:user/:proj', async (req,res) => {
     try {
         const { user, proj } = req.params;
         const time = new Date().toLocaleDateString([], {hour:'2-digit', minute:'2-digit'});
+       // const total_time = await Time.findOne({username: user, project:proj }, {clockin: }); //calculating total time
         const clock_out = await Time.findOneAndUpdate({username: user, project: proj}, {clockout: [time]});
         res.status(200).json(clock_out);
     } catch (error) {
@@ -96,10 +104,12 @@ app.get('/api/delete_notification/:user/:notif', async (req, res) => {
 app.get('/api/create_user/:user/:pass/:pos/:proj1', async (req,res) => {
     try {
         const { user, pass, pos, proj1, proj2 } = req.params;
-        const createuser = await User.create({username: user, password: pass, role: pos, projects: [proj1]});
+        //hash password 
+        const hash = await bcrypt.hash(pass, 10);
+        const createuser = await User.create({username: user, password: hash, role: pos, projects: [proj1]});
         res.status(200).json(createuser);
     } catch (error) {
-        res.status(500).json({message: error.message}); 
+        res.status(500).json({message: error.message}); //prints to localhost 
     }
 });
 
