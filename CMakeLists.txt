@@ -14,6 +14,7 @@ set(SOURCE_FILES
         src/MainWindow.h
         src/TimesWindow.h
         src/AchNotWindow.h
+        src/Achievements.h
         src/request.h
         src/request.cpp)
 

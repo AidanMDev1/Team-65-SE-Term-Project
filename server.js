@@ -265,7 +265,7 @@ app.get('/api/get_clockout/:user/:proj', async (req, res) => {
 app.get('/api/total_time_create/:user', async (req, res) => {
     try {
         const { user } = req.params;
-        const total_time_create = await Totaltime.create({username: user, time_worked: "0"});
+        const total_time_create = await Totaltime.create({username: user, time_worked: "0", times_clockin: "0"});
         res.status(200).json(total_time_create);
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -273,10 +273,10 @@ app.get('/api/total_time_create/:user', async (req, res) => {
 });
 
 // functionality to update total time
-app.get('/api/total_time_update/:user/:time', async (req, res) => {
+app.get('/api/total_time_update/:user/:time/:clockin', async (req, res) => {
     try {
-        const { user, time } = req.params;
-        const total_time_update = await Totaltime.findOneAndUpdate({username: user}, {time_worked: time});
+        const { user, time, clockin } = req.params;
+        const total_time_update = await Totaltime.findOneAndUpdate({username: user}, {time_worked: time, times_clockin: clockin});
         res.status(200).json(total_time_update);
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -289,6 +289,28 @@ app.get('/api/get_total_time/:user', async (req, res) => {
         const { user } = req.params;
         const get_total_time = await Totaltime.findOne({username: user});
         res.status(200).json(get_total_time);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+//functionality to get user notifications
+app.get('/api/get_notifications/:user', async (req, res) => {
+    try {
+        const { user } = req.params;
+        const get_notifications = await Notification.find({username: user});
+        res.status(200).json(get_notifications);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+//functionality to get notification sender
+app.get('/api/get_sender/:user', async (req, res) => {
+    try {
+        const { user } = req.params;
+        const get_sender = await Notification.find({username: user});
+        res.status(200).json(get_sender);
     } catch (error) {
         res.status(500).json({message: error.message});
     }
