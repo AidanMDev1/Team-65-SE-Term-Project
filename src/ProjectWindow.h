@@ -9,6 +9,7 @@
 class ProjectWindow {
 public:
     int proj_sel;
+    bool signed_in3;
     sf::Font f;
     sf::Texture back_img;
     sf::Sprite back_btn;
@@ -31,7 +32,7 @@ public:
     int seconds;
 
     ProjectWindow() { }
-    ProjectWindow(sf::Font& font, request& req, int& proj_sel) {
+    ProjectWindow(sf::Font& font, request& req, bool s, int& proj_sel) {
 
         //only shuld work if the proj_sel is updated (when a project is selected)
         if (proj_sel != -1){
@@ -49,6 +50,7 @@ public:
         }
         
         f = font;
+        signed_in3 = s;
         back_img.loadFromFile("files/back.png"); // find it in a folder where you store images
         back_btn.setTexture(back_img);
         back_btn.setScale({0.15, 0.15});
@@ -223,7 +225,9 @@ void ProjectWindowEvents(sf::RenderWindow& window, ProjectWindow* projectWindow,
 
                     std::cout << "total time worked: " << req.time_worked << std::endl;
 
-                    req.total_time_update(req.username, req.time_worked);
+                    req.total_clockin = to_string(stoi(req.total_clockin) + 1);
+
+                    req.total_time_update(req.username, req.time_worked, req.total_clockin);
 
                     projectWindow->hours = duration.count() / 3600;
                     projectWindow->minutes = (duration.count() % 3600) / 60;

@@ -243,9 +243,9 @@ public:
         specific_txt.drawTo(window);
         specify_btn.drawTo(window);
 
-        for (int i = time_pageing_num; i < lo_time.size(); i++) {
+        for (int i = time_paging_num; i < lo_times.size(); i++) {
             if (i < time_paging_num + 6) {
-                lo_time.at(i).drawTo(window);
+                lo_times.at(i).drawTo(window);
             }
         }
         for (int i = proj_paging_num; i < lo_projects.size(); i++) {
@@ -571,42 +571,42 @@ void TimesWindowEvents(sf::RenderWindow& window, TimesWindow* timesWindow, bool&
         }
         if (timesWindow->isMouseOverTimePU(window)) {
             std::cout << "Time page up" << std::endl;
-            timesWindow->time_paging_num-=6
+            timesWindow->time_paging_num-=6;
             if (timesWindow->time_paging_num <= 0) {
                 timesWindow->time_paging_num+=6;
             }
         }       
         if (timesWindow->isMouseOverTimePD(window)) {
             std::cout << "Time page down" << std::endl;
-            timesWindow->time_paging_num+=6
+            timesWindow->time_paging_num+=6;
             if (timesWindow->time_paging_num >= timesWindow->lo_times.size()) {
                 timesWindow->time_paging_num-=6;
             }
         }
         if (timesWindow->isMouseOverEmpPU(window)) {
             std::cout << "Employee page up" << std::endl;
-            timesWindow->employee_paging_num-=4
+            timesWindow->employee_paging_num-=4;
             if (timesWindow->employee_paging_num <= 0) {
                 timesWindow->employee_paging_num+=4;
             }
         }
         if (timesWindow->isMouseOverEmpPD(window)) {
             std::cout << "Employee page down" << std::endl;
-            timesWindow->employee_paging_num+=4
+            timesWindow->employee_paging_num+=4;
             if (timesWindow->employee_paging_num >= timesWindow->lo_employees.size()) {
                 timesWindow->employee_paging_num-=4;
             }
         }
         if (timesWindow->isMouseOverSpcPU(window)) {
             std::cout << "Specific page up" << std::endl;
-            timesWindow->proj_paging_num-=10
+            timesWindow->proj_paging_num-=10;
             if (timesWindow->proj_paging_num <= 0) {
                 timesWindow->proj_paging_num+=10;
             }
         }
         if (timesWindow->isMouseOverSpcPD(window)) {
             std::cout << "Specific page down" << std::endl;
-            timesWindow->proj_paging_num+=10
+            timesWindow->proj_paging_num+=10;
             if (timesWindow->proj_paging_num >= timesWindow->lo_projects.size()) {
                 timesWindow->proj_paging_num-=10;
             }

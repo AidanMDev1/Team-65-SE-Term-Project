@@ -17,6 +17,7 @@ public:
     string user_role;
     vector<string> assigned_projects;
     string time_worked;
+    string total_clockin;
 
     string get_allusers();
     bool login(string user, string pass);
@@ -37,12 +38,14 @@ public:
     bool edit_project(string project, string project_manager, string client);
     bool get_manager_projects(string project_manager);
     bool total_time_create(string username);
-    bool total_time_update(string username, string time);
+    bool total_time_update(string username, string time, string clockin);
     bool get_total_time(string username);
 
     vector<string> get_project_members(string project);
     vector<string> get_clockin(string user, string project);
     vector<string> get_clockout(string user, string project);
     vector<string> get_project_info(string project);
+    vector<string> get_notifications(string user);
+    vector<string> get_sender(string user);
 
 };

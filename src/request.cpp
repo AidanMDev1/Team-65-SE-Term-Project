@@ -609,9 +609,9 @@ bool request::total_time_create(string username)
     return true;
 };
 
-bool request::total_time_update(string username, string time)
+bool request::total_time_update(string username, string time, string clockin)
 {
-    string param = "api/total_time_update/" + username + "/" + time;
+    string param = "api/total_time_update/" + username + "/" + time + "/" + clockin;
     string req = url + param;
     string response_data;
 
@@ -662,14 +662,25 @@ bool request::get_total_time(string username)
         }
         curl_easy_cleanup(curl);
     }
-    size_t timePos = response_data.find("\"time_worked\"");
-    if (timePos != string::npos) {
-        // Find the start and end of the value string for time_worked
-        size_t timeStart = response_data.find_first_of(":", timePos);
-        size_t timeEnd = response_data.find_first_of(",", timeStart + 1);
-        time_worked = response_data.substr(timeStart + 2, timeEnd - timeStart - 3);
+    // size_t timePos = response_data.find("\"time_worked\"");
+    // if (timePos != string::npos) {
+    //     // Find the start and end of the value string for time_worked
+    //     size_t timeStart = response_data.find_first_of(":", timePos);
+    //     size_t timeEnd = response_data.find_first_of(",", timeStart + 1);
+    //     time_worked = response_data.substr(timeStart + 2, timeEnd - timeStart - 3);
+    size_t timeWorkedPos = response_data.find("\"time_worked\"");
+    size_t timesClockinPos = response_data.find("\"times_clockin\"");
 
-    }
+
+    size_t timeWorkedStart = response_data.find_first_of(":", timeWorkedPos);
+    size_t timeWorkedEnd = response_data.find_first_of(",", timeWorkedStart + 1);
+    time_worked = response_data.substr(timeWorkedStart + 2, timeWorkedEnd - timeWorkedStart - 3);
+
+    // Find the start and end of the value string for times_clockin
+    size_t timesClockinStart = response_data.find_first_of(":", timesClockinPos);
+    size_t timesClockinEnd = response_data.find_first_of(",", timesClockinStart + 1);
+    total_clockin = response_data.substr(timesClockinStart + 2, timesClockinEnd - timesClockinStart - 3);
+    
     return true;
 };
 
@@ -816,7 +827,7 @@ vector<string> request::get_clockout(string user, string project)
 }
 vector<string> request::get_project_info(string project)
 {
-        string param = "api/get_project_info/" + project;
+    string param = "api/get_project_info/" + project;
     string req = url + param;
     string response_data;
     vector<string> project_info;
@@ -860,3 +871,79 @@ vector<string> request::get_project_info(string project)
     return project_info;
 };
 
+vector<string> request::get_notifications(string user)
+{
+    string param = "api/get_notifications/" + user;
+    string req = url + param;
+    string response_data;
+    vector<string> notifications;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+
+        } else {
+                
+            size_t pos = 0;
+            string field = "notification";
+            while ((pos = response_data.find("\"" + field + "\"", pos)) != string::npos) {
+                // Find the start and end of the value string for the field
+                size_t start = response_data.find_first_of("\"", pos + field.size() + 3); // 3 accounts for ":"
+                size_t end = response_data.find_first_of("\"", start + 1);
+                string value = response_data.substr(start + 1, end - start - 1);
+                notifications.push_back(value);
+
+                // Move to the next object
+                pos = end;
+            }
+
+        }
+        curl_easy_cleanup(curl);
+    }
+    return notifications;
+};
+
+vector<string> request::get_sender(string user)
+{
+    string param = "api/get_sender/" + user;
+    string req = url + param;
+    string response_data;
+    vector<string> senders;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+
+        } else {
+                
+            size_t pos = 0;
+            while ((pos = response_data.find("\"sender\"", pos)) != string::npos) {
+                // Find the start and end of the value string for sender
+                size_t start = response_data.find_first_of("\"", pos + 8); // 8 is the length of "\"sender\""
+                size_t end = response_data.find_first_of("\"", start + 1);
+                string sender = response_data.substr(start + 1, end - start - 1);
+                senders.push_back(sender);
+
+                // Move to the next object
+                pos = end;
+            }
+
+        }
+        curl_easy_cleanup(curl);
+    }
+    return senders;
+};

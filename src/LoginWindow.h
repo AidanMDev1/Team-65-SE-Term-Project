@@ -105,7 +105,6 @@ void LoginWindowEvents(sf::RenderWindow& window, LoginWindow* loginWindow, MainW
                     if(!check2){  //user does not have a total time counter so create one for them
                         req.total_time_create(username);
                     }
-
                     main_screen = true;
                     login_screen = false;
                 }
